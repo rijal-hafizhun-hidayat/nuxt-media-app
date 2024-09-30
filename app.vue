@@ -1,6 +1,11 @@
+<script setup lang="ts">
+useHead({
+  title: "nuxt-app",
+});
+</script>
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-  </div>
+  <NuxtLoadingIndicator />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
