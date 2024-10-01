@@ -32,7 +32,6 @@ const login = () => {
             type="password"
             class="mt-1 block w-full"
             v-model="form.password"
-            autofocus
           />
         </div>
         <div class="flex items-center justify-between">
