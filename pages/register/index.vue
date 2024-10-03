@@ -1,31 +1,35 @@
 <script setup lang="ts">
+const { $api } = useNuxtApp();
 interface Form {
+  name: string;
   email: string;
   password: string;
 }
 
-const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
-const { $api } = useNuxtApp();
+const isLoading: Ref<Boolean> = ref(false);
 const form: Form = reactive({
+  name: "",
   email: "",
   password: "",
 });
 
-const login = async () => {
+const register = async () => {
   try {
     isLoading.value = true;
-    const response = await $api("login", {
+    const response: any = await $api("/register", {
       method: "post",
       body: {
+        name: form.name,
         email: form.email,
         password: form.password,
       },
     });
-
-    console.log(response);
+    validation.value = response;
+    console.log(validation.value);
   } catch (error: any) {
     isLoading.value = false;
+    //console.log(error.data);
     validation.value = error.data;
     console.log(validation.value);
   } finally {
@@ -39,12 +43,29 @@ const login = async () => {
       v-if="validation.statusCode === 404"
       :message="validation.errors"
     />
-    <form @submit.prevent="login()">
+    <BaseSuccessAlert
+      v-if="validation.statusCode === 200"
+      :message="validation.message"
+    />
+    <form @submit.prevent="register()">
       <div class="space-y-4">
+        <div>
+          <BaseInputLabel>Nama lengkap</BaseInputLabel>
+          <BaseTextInput
+            type="text"
+            class="mt-1 block w-full"
+            v-model="form.name"
+            autofocus
+          />
+          <BaseInputError
+            v-if="validation.statusCode === 400 && validation.errors.name"
+            :message="validation.errors.name._errors[0]"
+          />
+        </div>
         <div>
           <BaseInputLabel>Email</BaseInputLabel>
           <BaseTextInput
-            type="email"
+            type="text"
             class="mt-1 block w-full"
             v-model="form.email"
             autofocus
@@ -57,44 +78,22 @@ const login = async () => {
         <div>
           <BaseInputLabel>Password</BaseInputLabel>
           <BaseTextInput
-            type="password"
+            type="text"
             class="mt-1 block w-full"
             v-model="form.password"
+            autofocus
           />
           <BaseInputError
             v-if="validation.statusCode === 400 && validation.errors.password"
             :message="validation.errors.password._errors[0]"
           />
         </div>
-        <div class="flex items-center justify-between">
-          <div class="flex flex-col space-y-2">
-            <div>
-              <p class="text-sm">
-                Belum memiliki akun? klik
-                <NuxtLink
-                  class="text-blue-500 underline cursor-pointer"
-                  to="/register"
-                  >register</NuxtLink
-                >
-              </p>
-            </div>
-            <div>
-              <p class="text-sm">
-                Lupa password? klik
-                <NuxtLink
-                  class="text-blue-500 underline cursor-pointer"
-                  to="/reset-password"
-                  >reset password</NuxtLink
-                >
-              </p>
-            </div>
-          </div>
-
+        <div class="flex justify-end">
           <BasePrimaryButton
             :disabled="isLoading == true"
             :class="{ 'opacity-75': isLoading == true }"
             type="submit"
-            >Login</BasePrimaryButton
+            >Register</BasePrimaryButton
           >
         </div>
       </div>
