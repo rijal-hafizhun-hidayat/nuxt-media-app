@@ -12,5 +12,7 @@ console.log(true);
         </div>
       </div>
     </template>
+
+    <ProfileUser />
   </NuxtLayout>
 </template>
