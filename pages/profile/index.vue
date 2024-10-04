@@ -14,5 +14,8 @@ console.log(true);
     </template>
 
     <ProfileUser />
+    <ProfileEmail />
+    <ProfilePassword />
+    <ProfileVerified />
   </NuxtLayout>
 </template>

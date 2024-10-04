@@ -4,6 +4,7 @@ interface Form {
   password: string;
 }
 
+const router = useRouter();
 const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
 const { $api } = useNuxtApp();
@@ -24,6 +25,9 @@ const login = async () => {
     });
 
     console.log(response);
+    return router.push({
+      name: "dashboard",
+    });
   } catch (error: any) {
     isLoading.value = false;
     validation.value = error.data;
