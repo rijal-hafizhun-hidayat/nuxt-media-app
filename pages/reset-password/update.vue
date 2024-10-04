@@ -5,6 +5,7 @@ interface Form {
   email: string;
 }
 
+const router = useRouter();
 const route = useRoute();
 const { $api } = useNuxtApp();
 const validation: Ref<any> = ref([]);
@@ -59,6 +60,12 @@ const reSendToken = async () => {
   }
 };
 
+const loginPage = () => {
+  return router.push({
+    name: "index",
+  });
+};
+
 const numbersOnly = (evt: any) => {
   //   evt = evt ? evt : window.event;
   var charCode = evt.which ? evt.which : evt.keyCode;
@@ -71,6 +78,7 @@ const numbersOnly = (evt: any) => {
 </script>
 <template>
   <NuxtLayout name="login-layout">
+    <BaseInfoAlert :message="'silahkan cek email anda'" />
     <BaseDangerAlert
       v-if="validation.statusCode === 404"
       :message="validation.errors"
@@ -133,6 +141,11 @@ const numbersOnly = (evt: any) => {
             :class="{ 'opacity-75': isLoadingReSendToken == true }"
             type="button"
             >re-send otp</BasePrimaryButton
+          >
+        </div>
+        <div>
+          <BasePrimaryButton type="button" @click="loginPage()"
+            >kembali</BasePrimaryButton
           >
         </div>
       </div>
