@@ -1,5 +1,8 @@
 <script setup lang="ts">
 console.log(true);
+definePageMeta({
+  middleware: ["auth-middleware"],
+});
 </script>
 <template>
   <NuxtLayout name="dashboard-layout">

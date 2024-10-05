@@ -4,6 +4,7 @@ interface Form {
   password: string;
 }
 
+const store = useAuthStore();
 const router = useRouter();
 const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
@@ -16,7 +17,7 @@ const form: Form = reactive({
 const login = async () => {
   try {
     isLoading.value = true;
-    const response = await $api("login", {
+    const response: any = await $api("login", {
       method: "post",
       body: {
         email: form.email,
@@ -25,6 +26,10 @@ const login = async () => {
     });
 
     console.log(response);
+    store.isLogged = true;
+    const token = useCookie("token");
+    token.value = response.data;
+
     return router.push({
       name: "dashboard",
     });
