@@ -1,13 +1,31 @@
 <script setup lang="ts">
+const props = defineProps<{
+  email: string;
+}>();
+
 interface Form {
   email: string;
+  newEmail: string;
 }
+const { $api } = useNuxtApp();
 const form: Form = reactive({
-  email: "",
+  email: props.email,
+  newEmail: "",
 });
 
 const update = async () => {
-  console.log(form);
+  try {
+    const result = await $api("profile/update-email", {
+      method: "patch",
+      body: {
+        email: form.newEmail,
+      },
+    });
+
+    console.log(result);
+  } catch (error: any) {
+    console.log(error.data);
+  }
 };
 </script>
 <template>
@@ -17,9 +35,18 @@ const update = async () => {
       <div class="whitespace-nowrap">
         <form @submit.prevent="update()" class="space-y-4">
           <div>
-            <BaseInputLabel>email</BaseInputLabel>
+            <BaseInputLabel>active email</BaseInputLabel>
             <BaseTextInput
+              disabled
               v-model="form.email"
+              type="text"
+              class="mt-1 block w-full"
+            />
+          </div>
+          <div>
+            <BaseInputLabel>new email</BaseInputLabel>
+            <BaseTextInput
+              v-model="form.newEmail"
               type="text"
               class="mt-1 block w-full"
             />

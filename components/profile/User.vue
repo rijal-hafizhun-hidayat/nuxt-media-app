@@ -1,13 +1,29 @@
 <script setup lang="ts">
+const props = defineProps<{
+  name: string;
+}>();
+
 interface Form {
   name: string;
 }
+const { $api } = useNuxtApp();
 const form: Form = reactive({
-  name: "",
+  name: props.name,
 });
 
 const update = async () => {
-  console.log(form);
+  try {
+    const result = await $api("profile/update-name", {
+      method: "patch",
+      body: {
+        name: form.name,
+      },
+    });
+
+    console.log(result);
+  } catch (error: any) {
+    console.log(error.data);
+  }
 };
 </script>
 <template>
