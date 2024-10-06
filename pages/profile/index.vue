@@ -1,5 +1,14 @@
 <script setup lang="ts">
-console.log(true);
+definePageMeta({
+  middleware: ["auth-middleware"],
+});
+
+const response: Ref<any> = ref([]);
+const { data } = await useCustomFetch<[]>("profile");
+
+if (data.value) {
+  response.value = data.value;
+}
 </script>
 <template>
   <NuxtLayout name="dashboard-layout">
@@ -13,6 +22,9 @@ console.log(true);
       </div>
     </template>
 
-    <ProfileUser />
+    <ProfileUser :name="response.data.name" />
+    <ProfileEmail :email="response.data.email" />
+    <ProfilePassword />
+    <ProfileVerified />
   </NuxtLayout>
 </template>

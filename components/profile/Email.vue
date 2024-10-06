@@ -1,29 +1,32 @@
 <script setup lang="ts">
 const props = defineProps<{
-  name: string;
+  email: string;
 }>();
 
 interface Form {
-  name: string;
+  email: string;
+  newEmail: string;
 }
 const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
 const { $api } = useNuxtApp();
 const form: Form = reactive({
-  name: props.name,
+  email: props.email,
+  newEmail: "",
 });
 
 const update = async () => {
   try {
     isLoading.value = true;
-    const result = await $api("profile/update-name", {
+    const result = await $api("profile/update-email", {
       method: "patch",
       body: {
-        name: form.name,
+        email: form.newEmail,
       },
     });
 
     validation.value = result;
+    console.log(validation.value);
   } catch (error: any) {
     isLoading.value = false;
     validation.value = error.data;
@@ -36,23 +39,28 @@ const update = async () => {
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
-      <h1 class="font-bold mb-4">Update Profile</h1>
-      <BaseSuccessAlert
-        v-if="validation.statusCode === 200"
-        :message="validation.message"
-      />
+      <h1 class="font-bold mb-4">Update Email</h1>
       <div class="whitespace-nowrap">
         <form @submit.prevent="update()" class="space-y-4">
           <div>
-            <BaseInputLabel>Full Name</BaseInputLabel>
+            <BaseInputLabel>active email</BaseInputLabel>
             <BaseTextInput
-              v-model="form.name"
-              type="text"
+              disabled
+              v-model="form.email"
+              type="email"
+              class="mt-1 block w-full"
+            />
+          </div>
+          <div>
+            <BaseInputLabel>new email</BaseInputLabel>
+            <BaseTextInput
+              v-model="form.newEmail"
+              type="email"
               class="mt-1 block w-full"
             />
             <BaseInputError
-              v-if="validation.statusCode === 400 && validation.errors.name"
-              :message="validation.errors.name._errors[0]"
+              v-if="validation.statusCode === 400 && validation.errors.email"
+              :message="validation.errors.email._errors[0]"
             />
           </div>
           <div>
