@@ -7,6 +7,8 @@ interface Form {
   email: string;
   newEmail: string;
 }
+const isLoading: Ref<boolean> = ref(false);
+const validation: Ref<any> = ref([]);
 const { $api } = useNuxtApp();
 const form: Form = reactive({
   email: props.email,
@@ -15,6 +17,7 @@ const form: Form = reactive({
 
 const update = async () => {
   try {
+    isLoading.value = true;
     const result = await $api("profile/update-email", {
       method: "patch",
       body: {
@@ -22,9 +25,14 @@ const update = async () => {
       },
     });
 
-    console.log(result);
+    validation.value = result;
+    console.log(validation.value);
   } catch (error: any) {
-    console.log(error.data);
+    isLoading.value = false;
+    validation.value = error.data;
+    console.log(validation.value);
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -39,7 +47,7 @@ const update = async () => {
             <BaseTextInput
               disabled
               v-model="form.email"
-              type="text"
+              type="email"
               class="mt-1 block w-full"
             />
           </div>
@@ -47,12 +55,21 @@ const update = async () => {
             <BaseInputLabel>new email</BaseInputLabel>
             <BaseTextInput
               v-model="form.newEmail"
-              type="text"
+              type="email"
               class="mt-1 block w-full"
+            />
+            <BaseInputError
+              v-if="validation.statusCode === 400 && validation.errors.email"
+              :message="validation.errors.email._errors[0]"
             />
           </div>
           <div>
-            <BasePrimaryButton type="submit">Simpan</BasePrimaryButton>
+            <BasePrimaryButton
+              :disabled="isLoading == true"
+              :class="{ 'opacity-75': isLoading == true }"
+              type="submit"
+              >Simpan</BasePrimaryButton
+            >
           </div>
         </form>
       </div>
