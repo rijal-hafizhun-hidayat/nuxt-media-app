@@ -6,6 +6,8 @@ const props = defineProps<{
 interface Form {
   name: string;
 }
+const isLoading: Ref<boolean> = ref(false);
+const validation: Ref<any> = ref([]);
 const { $api } = useNuxtApp();
 const form: Form = reactive({
   name: props.name,
@@ -13,6 +15,7 @@ const form: Form = reactive({
 
 const update = async () => {
   try {
+    isLoading.value = true;
     const result = await $api("profile/update-name", {
       method: "patch",
       body: {
@@ -20,9 +23,13 @@ const update = async () => {
       },
     });
 
-    console.log(result);
+    validation.value = result;
   } catch (error: any) {
-    console.log(error.data);
+    isLoading.value = false;
+    validation.value = error.data;
+    console.log(validation.value);
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -30,6 +37,10 @@ const update = async () => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
       <h1 class="font-bold mb-4">Update Profile</h1>
+      <BaseSuccessAlert
+        v-if="validation.statusCode === 200"
+        :message="validation.message"
+      />
       <div class="whitespace-nowrap">
         <form @submit.prevent="update()" class="space-y-4">
           <div>
@@ -39,9 +50,18 @@ const update = async () => {
               type="text"
               class="mt-1 block w-full"
             />
+            <BaseInputError
+              v-if="validation.statusCode === 400 && validation.errors.name"
+              :message="validation.errors.name._errors[0]"
+            />
           </div>
           <div>
-            <BasePrimaryButton type="submit">Simpan</BasePrimaryButton>
+            <BasePrimaryButton
+              :disabled="isLoading == true"
+              :class="{ 'opacity-75': isLoading == true }"
+              type="submit"
+              >Simpan</BasePrimaryButton
+            >
           </div>
         </form>
       </div>
