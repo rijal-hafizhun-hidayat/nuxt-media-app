@@ -1,5 +1,5 @@
-export default defineNuxtPlugin((nuxtApp) => {
-  const token = useCookie<string>("token");
+export default defineNuxtPlugin(() => {
+  const token = useCookie<string | null>("token");
 
   const api = $fetch.create({
     baseURL: "http://localhost:8000/api",
@@ -20,9 +20,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     onResponseError({ response }) {
       if (response.status === 403) {
-        nuxtApp.runWithContext(() => navigateTo("/"));
+        token.value = null;
+        return navigateTo("/");
       }
-      console.log(response);
     },
   });
 
