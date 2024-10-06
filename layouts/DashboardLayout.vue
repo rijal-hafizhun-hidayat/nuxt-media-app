@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const showingNavigationDropdown = ref(false);
 const router = useRouter();
+const token = useCookie<null>("token");
 
 const logout = () => {
+  token.value = null;
   return router.push({
     name: "index",
   });
