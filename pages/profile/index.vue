@@ -23,6 +23,7 @@ if (data.value) {
     </template>
 
     <ProfileUser :name="response.data.name" />
+    <ProfileBio :bio="response.data.bio" />
     <ProfileEmail :email="response.data.email" />
     <ProfilePassword />
     <ProfileVerified />
