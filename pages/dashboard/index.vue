@@ -18,5 +18,7 @@ definePageMeta({
         </div>
       </div>
     </template>
+
+    <PostBase />
   </NuxtLayout>
 </template>
