@@ -15,11 +15,14 @@
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.9",
     "@tailwindcss/typography": "^0.5.15",
+    "@vesp/nuxt-fontawesome": "^1.1.0",
     "nuxt": "^3.13.0",
     "vue": "latest",
     "vue-router": "latest"
   },
-  "overrides": {
-    "vue": "latest"
+  "devDependencies": {
+    "@fortawesome/free-brands-svg-icons": "^6.6.0",
+    "@fortawesome/free-regular-svg-icons": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0"
   }
 }
