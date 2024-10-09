@@ -22,10 +22,12 @@ if (data.value) {
       </div>
     </template>
 
+    <ProfileBadge :name="response.data.name" :bio="response.data.bio" />
     <ProfileUser :name="response.data.name" />
     <ProfileBio :bio="response.data.bio" />
     <ProfileEmail :email="response.data.email" />
     <ProfilePassword />
+    <ProfileUpload />
     <ProfileVerified />
   </NuxtLayout>
 </template>
