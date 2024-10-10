@@ -20,12 +20,9 @@ interface FileUpload {
   isImage: Boolean;
   isUploaded: Boolean;
 }
-interface HTMLInputEvent extends Event {
-  target: HTMLInputElement & EventTarget;
-}
 const emit = defineEmits(["file-upload"]);
-const errors: Ref<string[]> = ref([]);
-const isLoading: Ref<Boolean> = ref(false);
+const filePlaceHolder: Ref<String> = ref("no file chosen");
+const errors: Ref<String[]> = ref([]);
 const uploadReady: Ref<Boolean> = ref(true);
 const fileUpload: FileUpload = reactive({
   file: "",
@@ -64,6 +61,8 @@ const handleFileChange = (e: Event) => {
       fileUpload.isImage = isImage;
       fileUpload.isUploaded = true;
 
+      filePlaceHolder.value = fileUpload.name + "." + fileUpload.fileExtention;
+
       console.log(fileUpload);
       sendDataToParent();
     } else {
@@ -100,22 +99,19 @@ const isValidFile = (file: File) => {
 };
 
 const resetFileInput = () => {
-  uploadReady.value = false;
-  nextTick(() => {
-    uploadReady.value = true;
-    fileUpload.name = "";
-    fileUpload.size = 0;
-    fileUpload.type = "";
-    fileUpload.fileExtention = "";
-    fileUpload.url = "";
-    fileUpload.isImage = false;
-    fileUpload.isUploaded = false;
-  });
+  uploadReady.value = true;
+  fileUpload.name = "";
+  fileUpload.size = 0;
+  fileUpload.type = "";
+  fileUpload.fileExtention = "";
+  fileUpload.url = "";
+  fileUpload.isImage = false;
+  fileUpload.isUploaded = false;
+  filePlaceHolder.value = "no file chosen";
 };
 
 const sendDataToParent = () => {
   emit("file-upload", fileUpload);
-  //resetFileInput();
 };
 </script>
 <template>
@@ -132,6 +128,12 @@ const sendDataToParent = () => {
     >
       Choose file
     </label>
-    <label class="text-sm text-slate-500">no file chosen</label>
+    <label
+      @click="resetFileInput()"
+      class="block text-sm text-slate-500 mr-4 py-2 px-4 rounded-md border-0 font-semibold bg-gray-50 hover:bg-gray-100 cursor-pointer"
+    >
+      Hapus File
+    </label>
+    <label class="text-sm text-slate-500">{{ filePlaceHolder }}</label>
   </div>
 </template>

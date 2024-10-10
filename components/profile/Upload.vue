@@ -1,10 +1,23 @@
 <script setup lang="ts">
+interface FileUpload {
+  file: File | string;
+  name: String;
+  size: Number;
+  type: String;
+  fileExtention: String;
+  url: String;
+  isImage: Boolean;
+  isUploaded: Boolean;
+}
+const fileUpload: Ref<File | String> = ref("");
+
 const upload = () => {
   console.log(true);
 };
 
-const getUploadData = (file: any) => {
-  console.log(file);
+const getUploadData = (dataFile: FileUpload) => {
+  fileUpload.value = dataFile.file;
+  console.log(fileUpload.value);
 };
 </script>
 <template>
