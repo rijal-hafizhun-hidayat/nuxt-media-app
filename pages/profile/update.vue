@@ -2,6 +2,7 @@
 definePageMeta({
   middleware: ["auth-middleware"],
 });
+
 const response: Ref<any> = ref([]);
 const { data } = await useCustomFetch<[]>("profile");
 
@@ -15,12 +16,17 @@ if (data.value) {
       <div class="flex justify-between">
         <div>
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            My Profile
+            Update Profile
           </h2>
         </div>
       </div>
     </template>
-    <ProfileBadge :bio="response.data.bio" :name="response.data.name" />
-    <PostBase />
+
+    <ProfileUser :name="response.data.name" />
+    <ProfileBio :bio="response.data.bio" />
+    <ProfileEmail :email="response.data.email" />
+    <ProfilePassword />
+    <ProfileUpload />
+    <ProfileVerified />
   </NuxtLayout>
 </template>

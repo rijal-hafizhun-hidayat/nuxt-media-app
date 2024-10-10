@@ -3,7 +3,14 @@ const props = defineProps<{
   bio: string;
   name: string;
 }>();
+const router = useRouter();
 console.log(props);
+
+const updateProfile = () => {
+  return router.push({
+    name: "profile-update",
+  });
+};
 </script>
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,6 +28,11 @@ console.log(props);
           </div>
           <div>
             <p class="italic">{{ props.bio }}</p>
+          </div>
+          <div>
+            <BasePrimaryButton @click="updateProfile()" type="button"
+              >edit profile</BasePrimaryButton
+            >
           </div>
         </div>
       </div>
