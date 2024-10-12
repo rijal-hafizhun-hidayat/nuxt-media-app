@@ -1,6 +1,16 @@
 <script setup lang="ts">
+const props = defineProps<{
+  is_profile: Boolean;
+}>();
 const posts: Ref<any> = ref([]);
-const { data, error } = await useCustomFetch<[]>("post");
+const apiRoute: Ref<string> = ref("");
+
+if (props.is_profile === true) {
+  apiRoute.value = "profile/post";
+} else {
+  apiRoute.value = "post";
+}
+const { data, error } = await useCustomFetch<[]>(apiRoute.value);
 
 if (data.value) {
   posts.value = data.value;
