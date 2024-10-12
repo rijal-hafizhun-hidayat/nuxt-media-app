@@ -25,8 +25,9 @@ const upload = async () => {
 
     validation.value = result;
     console.log(validation.value);
-  } catch (error: unknown) {
-    console.log(error);
+  } catch (error: any) {
+    validation.value = error.data;
+    console.log(validation.value);
   }
 };
 
@@ -41,6 +42,10 @@ const getUploadData = (dataFile: FileUpload) => {
       <BaseSuccessAlert
         v-if="validation.statusCode === 200"
         :message="validation.message"
+      />
+      <BaseDangerAlert
+        v-if="validation.statusCode === 400 || validation.statusCode === 500"
+        :message="validation.errors"
       />
       <form @submit.prevent="upload()" class="space-y-4">
         <div>

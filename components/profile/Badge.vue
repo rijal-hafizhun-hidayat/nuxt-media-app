@@ -2,6 +2,7 @@
 const props = defineProps<{
   bio: string;
   name: string;
+  avatar: string;
 }>();
 const router = useRouter();
 console.log(props);
@@ -20,7 +21,7 @@ const updateProfile = () => {
           <div>
             <NuxtImg
               class="object-cover object-top w-28 sm:w-40 h-28 sm:h-40"
-              src="/img/falling-into-darkness.jpg"
+              :src="props.avatar"
             />
           </div>
           <div>
