@@ -115,25 +115,30 @@ const sendDataToParent = () => {
 };
 </script>
 <template>
-  <div class="flex flex-row items-center">
-    <input
-      type="file"
-      id="custom-input"
-      hidden
-      @change="handleFileChange($event)"
-    />
-    <label
-      for="custom-input"
-      class="block text-sm text-slate-500 mr-4 py-2 px-4 rounded-md border-0 font-semibold bg-gray-50 hover:bg-gray-100 cursor-pointer"
-    >
-      Choose file
-    </label>
-    <label
-      @click="resetFileInput()"
-      class="block text-sm text-slate-500 mr-4 py-2 px-4 rounded-md border-0 font-semibold bg-gray-50 hover:bg-gray-100 cursor-pointer"
-    >
-      Hapus File
-    </label>
-    <label class="text-sm text-slate-500">{{ filePlaceHolder }}</label>
+  <div class="space-y-4">
+    <div class="flex flex-row items-center">
+      <input
+        type="file"
+        id="custom-input"
+        hidden
+        @change="handleFileChange($event)"
+      />
+      <label
+        for="custom-input"
+        class="block text-sm text-slate-500 mr-4 py-2 px-4 rounded-md border-0 font-semibold bg-gray-50 hover:bg-gray-100 cursor-pointer"
+      >
+        Choose file
+      </label>
+      <label
+        @click="resetFileInput()"
+        class="block text-sm text-slate-500 mr-4 py-2 px-4 rounded-md border-0 font-semibold bg-gray-50 hover:bg-gray-100 cursor-pointer"
+      >
+        Hapus File
+      </label>
+      <label class="text-sm text-slate-500">{{ filePlaceHolder }}</label>
+    </div>
+    <div v-for="error in errors">
+      <BaseInputError :message="error as string" />
+    </div>
   </div>
 </template>

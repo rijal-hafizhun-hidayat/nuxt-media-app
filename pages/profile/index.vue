@@ -7,6 +7,7 @@ const { data } = await useCustomFetch<[]>("profile");
 
 if (data.value) {
   response.value = data.value;
+  console.log(response.value);
 }
 </script>
 <template>
@@ -20,7 +21,11 @@ if (data.value) {
         </div>
       </div>
     </template>
-    <ProfileBadge :bio="response.data.bio" :name="response.data.name" />
+    <ProfileBadge
+      :bio="response.data.bio"
+      :name="response.data.name"
+      :avatar="response.data.avatar"
+    />
     <PostBase />
   </NuxtLayout>
 </template>
