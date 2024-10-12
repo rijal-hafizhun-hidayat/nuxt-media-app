@@ -40,6 +40,14 @@ const update = async () => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
       <h1 class="font-bold mb-4">Update Email</h1>
+      <BaseSuccessAlert
+        v-if="validation.statusCode === 200"
+        :message="validation.message"
+      />
+      <BaseDangerAlert
+        v-if="validation.statusCode === 404"
+        :message="validation.errors"
+      />
       <form @submit.prevent="update()" class="space-y-4">
         <div>
           <BaseInputLabel>active email</BaseInputLabel>
