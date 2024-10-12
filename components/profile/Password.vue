@@ -39,44 +39,42 @@ const update = async () => {
         v-if="validation.statusCode === 404"
         :message="validation.errors"
       />
-      <div class="whitespace-nowrap">
-        <form @submit.prevent="update()" class="space-y-4">
-          <div>
-            <BaseInputLabel
-              >masukkan konfirmasi password(menggunakan password
-              lama)</BaseInputLabel
-            >
-            <BaseTextInput
-              v-model="form.oldPassword"
-              type="text"
-              class="mt-1 block w-full"
-            />
-            <BaseInputError
-              v-if="
-                validation.statusCode === 400 && validation.errors.oldPassword
-              "
-              :message="validation.errors.oldPassword._errors[0]"
-            />
-          </div>
-          <div>
-            <BaseInputLabel>masukkan password baru</BaseInputLabel>
-            <BaseTextInput
-              v-model="form.newPassword"
-              type="text"
-              class="mt-1 block w-full"
-            />
-            <BaseInputError
-              v-if="
-                validation.statusCode === 400 && validation.errors.newPassword
-              "
-              :message="validation.errors.newPassword._errors[0]"
-            />
-          </div>
-          <div>
-            <BasePrimaryButton type="submit">Simpan</BasePrimaryButton>
-          </div>
-        </form>
-      </div>
+      <form @submit.prevent="update()" class="space-y-4">
+        <div>
+          <BaseInputLabel
+            >masukkan konfirmasi password(menggunakan password
+            lama)</BaseInputLabel
+          >
+          <BaseTextInput
+            v-model="form.oldPassword"
+            type="text"
+            class="mt-1 block w-full"
+          />
+          <BaseInputError
+            v-if="
+              validation.statusCode === 400 && validation.errors.oldPassword
+            "
+            :message="validation.errors.oldPassword._errors[0]"
+          />
+        </div>
+        <div>
+          <BaseInputLabel>masukkan password baru</BaseInputLabel>
+          <BaseTextInput
+            v-model="form.newPassword"
+            type="text"
+            class="mt-1 block w-full"
+          />
+          <BaseInputError
+            v-if="
+              validation.statusCode === 400 && validation.errors.newPassword
+            "
+            :message="validation.errors.newPassword._errors[0]"
+          />
+        </div>
+        <div>
+          <BasePrimaryButton type="submit">Simpan</BasePrimaryButton>
+        </div>
+      </form>
     </div>
   </div>
 </template>

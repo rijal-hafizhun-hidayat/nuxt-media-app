@@ -44,30 +44,28 @@ const update = async () => {
         v-if="validation.statusCode === 404"
         :message="validation.errors"
       />
-      <div class="whitespace-nowrap">
-        <form @submit.prevent="update()" class="space-y-4">
-          <div>
-            <BaseInputLabel>Biografi</BaseInputLabel>
-            <BaseTextInput
-              type="text"
-              class="block mt-1 w-full"
-              v-model="form.bio"
-            />
-            <BaseInputError
-              v-if="validation.statusCode === 400 && validation.errors.bio"
-              :message="validation.errors.bio._errors[0]"
-            />
-          </div>
-          <div>
-            <BasePrimaryButton
-              :disabled="isLoading == true"
-              :class="{ 'opacity-75': isLoading == true }"
-              type="submit"
-              >simpan</BasePrimaryButton
-            >
-          </div>
-        </form>
-      </div>
+      <form @submit.prevent="update()" class="space-y-4">
+        <div>
+          <BaseInputLabel>Biografi</BaseInputLabel>
+          <BaseTextInput
+            type="text"
+            class="block mt-1 w-full"
+            v-model="form.bio"
+          />
+          <BaseInputError
+            v-if="validation.statusCode === 400 && validation.errors.bio"
+            :message="validation.errors.bio._errors[0]"
+          />
+        </div>
+        <div>
+          <BasePrimaryButton
+            :disabled="isLoading == true"
+            :class="{ 'opacity-75': isLoading == true }"
+            type="submit"
+            >simpan</BasePrimaryButton
+          >
+        </div>
+      </form>
     </div>
   </div>
 </template>
