@@ -26,6 +26,6 @@ if (data.value) {
       :name="response.data.name"
       :avatar="response.data.avatar"
     />
-    <PostBase />
+    <PostBase :is_profile="true" />
   </NuxtLayout>
 </template>

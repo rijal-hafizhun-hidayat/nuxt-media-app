@@ -26,6 +26,6 @@ const createPost = () => {
       </div>
     </template>
 
-    <PostBase />
+    <PostBase :is_profile="false" />
   </NuxtLayout>
 </template>
