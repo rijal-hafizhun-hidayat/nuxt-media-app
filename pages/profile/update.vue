@@ -2,12 +2,24 @@
 definePageMeta({
   middleware: ["auth-middleware"],
 });
-
-const response: Ref<any> = ref([]);
-const { data } = await useCustomFetch<[]>("profile");
+interface Response {
+  statusCode: number;
+  message: string;
+  data: ResponseProfile | null;
+}
+interface ResponseProfile {
+  bio: string;
+  email: string;
+  name: string;
+}
+const response: Ref<Response> = ref({} as Response);
+const { data, error } = await useCustomFetch<Response>("profile");
 
 if (data.value) {
   response.value = data.value;
+  console.log(response.value);
+} else if (error.value) {
+  console.log(error.value);
 }
 </script>
 <template>
@@ -22,9 +34,9 @@ if (data.value) {
       </div>
     </template>
 
-    <ProfileUser :name="response.data.name" />
-    <ProfileBio :bio="response.data.bio" />
-    <ProfileEmail :email="response.data.email" />
+    <ProfileUser :name="response.data?.name ?? null" />
+    <ProfileBio :bio="response.data?.bio ?? null" />
+    <ProfileEmail :email="response.data?.email ?? null" />
     <ProfilePassword />
     <ProfileUpload />
     <ProfileVerified />
