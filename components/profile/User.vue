@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  name: string;
+  name: string | null;
 }>();
 
 interface Form {
@@ -10,7 +10,7 @@ const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
 const { $api } = useNuxtApp();
 const form: Form = reactive({
-  name: props.name,
+  name: props.name ?? "",
 });
 
 const update = async () => {
@@ -41,30 +41,28 @@ const update = async () => {
         v-if="validation.statusCode === 200"
         :message="validation.message"
       />
-      <div class="whitespace-nowrap">
-        <form @submit.prevent="update()" class="space-y-4">
-          <div>
-            <BaseInputLabel>Full Name</BaseInputLabel>
-            <BaseTextInput
-              v-model="form.name"
-              type="text"
-              class="mt-1 block w-full"
-            />
-            <BaseInputError
-              v-if="validation.statusCode === 400 && validation.errors.name"
-              :message="validation.errors.name._errors[0]"
-            />
-          </div>
-          <div>
-            <BasePrimaryButton
-              :disabled="isLoading == true"
-              :class="{ 'opacity-75': isLoading == true }"
-              type="submit"
-              >Simpan</BasePrimaryButton
-            >
-          </div>
-        </form>
-      </div>
+      <form @submit.prevent="update()" class="space-y-4">
+        <div>
+          <BaseInputLabel>Full Name</BaseInputLabel>
+          <BaseTextInput
+            v-model="form.name"
+            type="text"
+            class="mt-1 block w-full"
+          />
+          <BaseInputError
+            v-if="validation.statusCode === 400 && validation.errors.name"
+            :message="validation.errors.name._errors[0]"
+          />
+        </div>
+        <div>
+          <BasePrimaryButton
+            :disabled="isLoading == true"
+            :class="{ 'opacity-75': isLoading == true }"
+            type="submit"
+            >Simpan</BasePrimaryButton
+          >
+        </div>
+      </form>
     </div>
   </div>
 </template>

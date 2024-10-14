@@ -1,27 +1,23 @@
 <script setup lang="ts">
 const props = defineProps<{
-  email: string | null;
+  bio: string | null;
 }>();
-
 interface Form {
-  email: string;
-  newEmail: string;
+  bio: string;
 }
+const { $api } = useNuxtApp();
 const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
-const { $api } = useNuxtApp();
 const form: Form = reactive({
-  email: props.email ?? "",
-  newEmail: "",
+  bio: props.bio ?? "",
 });
-
 const update = async () => {
   try {
     isLoading.value = true;
-    const result = await $api("profile/update-email", {
+    const result = await $api("profile/update-bio", {
       method: "patch",
       body: {
-        email: form.newEmail,
+        bio: form.bio,
       },
     });
 
@@ -39,7 +35,7 @@ const update = async () => {
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
-      <h1 class="font-bold mb-4">Update Email</h1>
+      <h1 class="font-bold mb-4">Update Bio</h1>
       <BaseSuccessAlert
         v-if="validation.statusCode === 200"
         :message="validation.message"
@@ -50,24 +46,15 @@ const update = async () => {
       />
       <form @submit.prevent="update()" class="space-y-4">
         <div>
-          <BaseInputLabel>active email</BaseInputLabel>
+          <BaseInputLabel>Biografi</BaseInputLabel>
           <BaseTextInput
-            disabled
-            v-model="form.email"
-            type="email"
-            class="mt-1 block w-full"
-          />
-        </div>
-        <div>
-          <BaseInputLabel>new email</BaseInputLabel>
-          <BaseTextInput
-            v-model="form.newEmail"
-            type="email"
-            class="mt-1 block w-full"
+            type="text"
+            class="block mt-1 w-full"
+            v-model="form.bio"
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.email"
-            :message="validation.errors.email._errors[0]"
+            v-if="validation.statusCode === 400 && validation.errors.bio"
+            :message="validation.errors.bio._errors[0]"
           />
         </div>
         <div>
@@ -75,7 +62,7 @@ const update = async () => {
             :disabled="isLoading == true"
             :class="{ 'opacity-75': isLoading == true }"
             type="submit"
-            >Simpan</BasePrimaryButton
+            >simpan</BasePrimaryButton
           >
         </div>
       </form>

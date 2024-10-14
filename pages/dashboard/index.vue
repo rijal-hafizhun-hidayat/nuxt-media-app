@@ -1,8 +1,13 @@
 <script setup>
-console.log(true);
 definePageMeta({
   middleware: ["auth-middleware"],
 });
+const router = useRouter();
+const createPost = () => {
+  return router.push({
+    name: "dashboard-create",
+  });
+};
 </script>
 <template>
   <NuxtLayout name="dashboard-layout">
@@ -14,9 +19,13 @@ definePageMeta({
           </h2>
         </div>
         <div>
-          <BasePrimaryButton type="button">Buat Postingan</BasePrimaryButton>
+          <BasePrimaryButton @click="createPost()" type="button"
+            >Buat Postingan</BasePrimaryButton
+          >
         </div>
       </div>
     </template>
+
+    <PostBase :is_profile="false" />
   </NuxtLayout>
 </template>
