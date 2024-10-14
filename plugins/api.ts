@@ -1,11 +1,11 @@
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
   const token = useCookie<string | null>("token");
 
   const api = $fetch.create({
     baseURL: "http://localhost:8000/api",
     onRequest({ request, options, error }) {
       if (token.value) {
-        const headers = options.headers || {};
+        const headers: Headers = options.headers || {};
         if (Array.isArray(headers)) {
           headers.push(["Authorization", `Bearer ${token.value}`]);
         } else if (headers instanceof Headers) {
@@ -18,10 +18,16 @@ export default defineNuxtPlugin(() => {
     onResponse({ response }) {
       console.log(response);
     },
-    onResponseError({ response }) {
+    async onResponseError({ response }) {
+      console.log(response);
       if (response.status === 403) {
         token.value = null;
-        return navigateTo("/");
+        await nuxtApp.runWithContext(() => navigateTo("/"));
+      }
+
+      if (response.status === 500) {
+        token.value = null;
+        await nuxtApp.runWithContext(() => navigateTo("/"));
       }
     },
   });

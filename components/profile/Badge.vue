@@ -1,11 +1,26 @@
 <script setup lang="ts">
-const props = defineProps<{
-  bio: string;
-  name: string;
+interface Response {
+  statusCode: number;
+  message: string;
+  data: ResponseProfile | null;
+}
+interface ResponseProfile {
   avatar: string;
-}>();
+  bio: string;
+  email: string;
+  id: number;
+  name: string;
+}
 const router = useRouter();
-console.log(props);
+const response: Ref<Response> = ref({} as Response);
+const { data, error } = await useCustomFetch<Response>("profile");
+
+if (data.value) {
+  response.value = data.value;
+  console.log(response.value);
+} else if (error.value) {
+  console.log(error.value);
+}
 
 const updateProfile = () => {
   return router.push({
@@ -21,14 +36,14 @@ const updateProfile = () => {
           <div>
             <NuxtImg
               class="object-cover object-top w-28 sm:w-40 h-28 sm:h-40"
-              :src="props.avatar"
+              :src="response.data?.avatar ?? 'img/falling-into-darkness.jpg'"
             />
           </div>
           <div>
-            <p class="font-bold text-lg">{{ props.name }}</p>
+            <p class="font-bold text-lg">{{ response.data?.name }}</p>
           </div>
           <div>
-            <p class="italic">{{ props.bio }}</p>
+            <p class="italic">{{ response.data?.bio }}</p>
           </div>
           <div>
             <BasePrimaryButton @click="updateProfile()" type="button"
