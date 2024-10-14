@@ -2,7 +2,24 @@
 const props = defineProps<{
   is_profile: Boolean;
 }>();
-const posts: Ref<any> = ref([]);
+interface Response {
+  statusCode: number;
+  message: string;
+  data: PostResponse[];
+}
+interface PostResponse {
+  id: number;
+  user_id: number;
+  content: string;
+  created_at: Date;
+  updated_at: Date;
+  user: UserPostResponse;
+}
+interface UserPostResponse {
+  id: number;
+  name: string;
+}
+const posts: Ref<Response> = ref({} as Response);
 const apiRoute: Ref<string> = ref("");
 
 if (props.is_profile === true) {
@@ -10,7 +27,7 @@ if (props.is_profile === true) {
 } else {
   apiRoute.value = "post";
 }
-const { data, error } = await useCustomFetch<[]>(apiRoute.value);
+const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 
 if (data.value) {
   posts.value = data.value;

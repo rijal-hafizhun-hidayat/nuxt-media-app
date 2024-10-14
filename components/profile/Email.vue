@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  email: string;
+  email: string | null;
 }>();
 
 interface Form {
@@ -11,7 +11,7 @@ const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
 const { $api } = useNuxtApp();
 const form: Form = reactive({
-  email: props.email,
+  email: props.email ?? "",
   newEmail: "",
 });
 

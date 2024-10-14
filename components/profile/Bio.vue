@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  bio: string;
+  bio: string | null;
 }>();
 interface Form {
   bio: string;
@@ -9,7 +9,7 @@ const { $api } = useNuxtApp();
 const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<any> = ref([]);
 const form: Form = reactive({
-  bio: props.bio || "",
+  bio: props.bio ?? "",
 });
 const update = async () => {
   try {
