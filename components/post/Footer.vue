@@ -77,6 +77,6 @@ const likePost = async () => {
     </div>
   </div>
   <div class="border-t" v-if="showComment === true">
-    <PostComments />
+    <CommentBase />
   </div>
 </template>
