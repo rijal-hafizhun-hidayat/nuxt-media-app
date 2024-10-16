@@ -1,14 +1,16 @@
 <script setup lang="ts">
 const props = defineProps<{
   postId: number;
-  isLiked: boolean;
+  isLikedUser: boolean;
+  postLikeCount: number;
 }>();
 type ApiMethod = "delete" | "post";
 
 const apiRoute: Ref<string> = ref("");
 const apiMethod: Ref<ApiMethod> = ref("post");
 const showComment: Ref<boolean> = ref(false);
-const isLike: Ref<boolean> = ref(props.isLiked);
+const likeCount: Ref<number> = ref(props.postLikeCount);
+const isLike: Ref<boolean> = ref(props.isLikedUser);
 const { $api } = useNuxtApp();
 
 const toggleComment = () => {
@@ -27,12 +29,16 @@ const likePost = async () => {
       method: apiMethod.value,
     });
     console.log(result);
+    apiMethod.value == "post" ? likeCount.value++ : likeCount.value--;
   } catch (error: any) {
     console.log(error.data);
   }
 };
 </script>
 <template>
+  <div>
+    <p class="font-light">{{ likeCount }} likes, 50 comments</p>
+  </div>
   <div class="flex justify-around border-t">
     <div
       @click="likePost()"

@@ -14,7 +14,8 @@ interface PostResponse {
   created_at: Date;
   updated_at: Date;
   user: UserPostResponse;
-  is_liked: boolean;
+  is_liked_user: boolean;
+  post_like_count: number;
 }
 interface UserPostResponse {
   id: number;
@@ -56,9 +57,11 @@ if (data.value) {
         <div>
           <p>{{ post.content }}</p>
         </div>
-        <div>
-          <PostFooter :postId="post.id" :isLiked="post.is_liked" />
-        </div>
+        <PostFooter
+          :postId="post.id"
+          :isLikedUser="post.is_liked_user"
+          :postLikeCount="post.post_like_count"
+        />
       </div>
     </div>
   </div>

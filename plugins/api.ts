@@ -24,11 +24,6 @@ export default defineNuxtPlugin((nuxtApp) => {
         token.value = null;
         await nuxtApp.runWithContext(() => navigateTo("/"));
       }
-
-      if (response.status === 500) {
-        token.value = null;
-        await nuxtApp.runWithContext(() => navigateTo("/"));
-      }
     },
   });
 

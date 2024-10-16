@@ -1,4 +1,5 @@
 import { defineStore } from "#imports";
+import { useName } from "~/composables/state";
 
 export const useAuthStore = defineStore("auth", () => {
   const isLogged: Ref<boolean> = ref(false);
@@ -19,9 +20,15 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  function reset() {
+    isLogged.value = false;
+    auth.value = [];
+  }
+
   return {
     isLogged,
     auth,
     me,
+    reset,
   };
 });
