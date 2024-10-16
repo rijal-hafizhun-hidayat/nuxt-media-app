@@ -21,6 +21,9 @@ interface UserPostResponse {
   id: number;
   name: string;
 }
+const store = useAuthStore();
+const router = useRouter();
+console.log(store.auth.data.id);
 const posts: Ref<Response> = ref({} as Response);
 const apiRoute: Ref<string> = ref("");
 
@@ -37,6 +40,18 @@ if (data.value) {
 } else if (error) {
   console.log(error);
 }
+
+const toProfile = (userId: number) => {
+  const routePage: any = {};
+  if (store.auth.data.id === userId) {
+    routePage.name = "profile";
+  } else {
+    routePage.name = "profile-id";
+    routePage.params = {};
+    routePage.params.id = userId;
+  }
+  return router.push(routePage);
+};
 </script>
 <template>
   <div
@@ -48,7 +63,12 @@ if (data.value) {
       <div class="space-y-4">
         <div class="flex space-x-4">
           <div>
-            <p class="font-bold capitalize">{{ post.user.name }}</p>
+            <p
+              @click="toProfile(post.user_id)"
+              class="cursor-pointer font-bold capitalize"
+            >
+              {{ post.user.name }}
+            </p>
           </div>
           <div>
             <p class="text-green-500 font-bold">online</p>

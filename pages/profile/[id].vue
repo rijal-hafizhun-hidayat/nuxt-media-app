@@ -2,6 +2,8 @@
 definePageMeta({
   middleware: ["auth-middleware"],
 });
+const route = useRoute();
+const userId: number = parseInt(route.params.id as string);
 </script>
 <template>
   <NuxtLayout name="dashboard-layout">
@@ -9,12 +11,11 @@ definePageMeta({
       <div class="flex justify-between">
         <div>
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            My Profile
+            Profile
           </h2>
         </div>
       </div>
     </template>
-    <ProfileBadge :isMyProfile="true" />
-    <PostBase :is_profile="true" />
+    <ProfileBadge :isMyProfile="false" :userId="userId" />
   </NuxtLayout>
 </template>
