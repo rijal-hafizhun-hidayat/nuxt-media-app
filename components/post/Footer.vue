@@ -6,6 +6,7 @@ const props = defineProps<{
 }>();
 type ApiMethod = "delete" | "post";
 
+const isDisable: Ref<boolean> = ref(false);
 const apiRoute: Ref<string> = ref("");
 const apiMethod: Ref<ApiMethod> = ref("post");
 const showComment: Ref<boolean> = ref(false);
@@ -25,6 +26,7 @@ const likePost = async () => {
   apiMethod.value = isLike.value ? "post" : "delete"; // switch between post and delete
 
   try {
+    isDisable.value = true;
     const result = await $api(apiRoute.value, {
       method: apiMethod.value,
     });
@@ -32,6 +34,8 @@ const likePost = async () => {
     apiMethod.value == "post" ? likeCount.value++ : likeCount.value--;
   } catch (error: any) {
     console.log(error.data);
+  } finally {
+    isDisable.value = false;
   }
 };
 </script>
@@ -40,7 +44,8 @@ const likePost = async () => {
     <p class="font-light">{{ likeCount }} likes, 50 comments</p>
   </div>
   <div class="flex justify-around border-t">
-    <div
+    <button
+      :disabled="isDisable"
       @click="likePost()"
       class="w-full mt-2 py-2 cursor-pointer transition ease-in-out duration-150 hover:bg-gray-300 hover:rounded"
     >
@@ -53,7 +58,7 @@ const likePost = async () => {
         </span>
         <span class="font-medium">Suka</span>
       </div>
-    </div>
+    </button>
     <div
       @click="toggleComment()"
       class="w-full mt-2 py-2 cursor-pointer transition ease-in-out duration-150 hover:bg-gray-300 hover:rounded"
