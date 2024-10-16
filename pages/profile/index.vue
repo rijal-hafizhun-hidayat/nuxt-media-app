@@ -15,6 +15,6 @@ definePageMeta({
       </div>
     </template>
     <ProfileBadge :isMyProfile="true" />
-    <PostBase :is_profile="true" />
+    <PostBase :isMyProfile="true" />
   </NuxtLayout>
 </template>

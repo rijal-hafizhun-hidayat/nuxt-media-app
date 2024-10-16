@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const props = defineProps<{
-  is_profile: Boolean;
+  isMyProfile: Boolean;
+  userId?: number;
 }>();
+console.log(props);
 interface Response {
   statusCode: number;
   message: string;
@@ -23,20 +25,21 @@ interface UserPostResponse {
 }
 const store = useAuthStore();
 const router = useRouter();
-console.log(store.auth.data.id);
 const posts: Ref<Response> = ref({} as Response);
 const apiRoute: Ref<string> = ref("");
 
-if (props.is_profile === true) {
+if (props.isMyProfile === true) {
   apiRoute.value = "profile/post";
+} else if (props.userId) {
+  apiRoute.value = `profile/${props.userId}/post`;
 } else {
   apiRoute.value = "post";
 }
+
 const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 
 if (data.value) {
   posts.value = data.value;
-  console.log(posts.value);
 } else if (error) {
   console.log(error);
 }
