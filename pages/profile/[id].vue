@@ -17,5 +17,6 @@ const userId: number = parseInt(route.params.id as string);
       </div>
     </template>
     <ProfileBadge :isMyProfile="false" :userId="userId" />
+    <PostBase :isMyProfile="false" :userId="userId" />
   </NuxtLayout>
 </template>
