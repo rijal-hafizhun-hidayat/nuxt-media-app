@@ -2,9 +2,11 @@
 const showingNavigationDropdown = ref(false);
 const router = useRouter();
 const token = useCookie<null>("token");
+const store = useAuthStore();
 
 const logout = () => {
   token.value = null;
+  store.reset();
   return router.push({
     name: "index",
   });
@@ -50,7 +52,7 @@ const myProfile = () => {
                           type="button"
                           class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                         >
-                          {{ "rijal hafizhun hidayat" }}
+                          {{ store.auth.data.name }}
 
                           <svg
                             class="ml-2 -mr-0.5 h-4 w-4"
@@ -145,10 +147,10 @@ const myProfile = () => {
             <div class="pt-4 pb-1 border-t border-gray-200">
               <div class="px-4">
                 <div class="font-medium text-base text-gray-800">
-                  {{ "rijal hafizhun hidayat" }}
+                  {{ store.auth.data.name }}
                 </div>
                 <div class="font-medium text-sm text-gray-500">
-                  {{ "rijal hafizhun hidayat" }}
+                  {{ store.auth.data.name }}
                 </div>
               </div>
 
