@@ -1,5 +1,6 @@
 export default defineNuxtPlugin((nuxtApp) => {
   const token = useCookie<string | null>("token");
+  const store = useAuthStore();
 
   const api = $fetch.create({
     baseURL: "http://localhost:8000/api",
@@ -22,6 +23,12 @@ export default defineNuxtPlugin((nuxtApp) => {
       console.log(response);
       if (response.status === 403) {
         token.value = null;
+        store.reset();
+        await nuxtApp.runWithContext(() => navigateTo("/"));
+      }
+      if (response.status === 500) {
+        token.value = null;
+        store.reset();
         await nuxtApp.runWithContext(() => navigateTo("/"));
       }
     },

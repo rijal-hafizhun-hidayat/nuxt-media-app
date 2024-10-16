@@ -11,9 +11,16 @@ interface ResponseProfile {
   id: number;
   name: string;
 }
+const props = defineProps<{
+  isMyProfile: boolean;
+  userId?: number;
+}>();
+const apiRoute: Ref<string> = ref("");
 const router = useRouter();
 const response: Ref<Response> = ref({} as Response);
-const { data, error } = await useCustomFetch<Response>("profile");
+
+apiRoute.value = props.isMyProfile ? "profile" : `profile/${props.userId}`;
+const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 
 if (data.value) {
   response.value = data.value;
@@ -46,7 +53,10 @@ const updateProfile = () => {
             <p class="italic">{{ response.data?.bio }}</p>
           </div>
           <div>
-            <BasePrimaryButton @click="updateProfile()" type="button"
+            <BasePrimaryButton
+              v-if="props.isMyProfile"
+              @click="updateProfile()"
+              type="button"
               >edit profile</BasePrimaryButton
             >
           </div>
