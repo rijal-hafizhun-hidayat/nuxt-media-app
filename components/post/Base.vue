@@ -18,6 +18,7 @@ interface PostResponse {
   user: UserPostResponse;
   is_liked_user: boolean;
   post_like_count: number;
+  post_comment_count: number;
 }
 interface UserPostResponse {
   id: number;
@@ -40,6 +41,7 @@ const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 
 if (data.value) {
   posts.value = data.value;
+  console.log(posts.value);
 } else if (error) {
   console.log(error);
 }
@@ -84,6 +86,7 @@ const toProfile = (userId: number) => {
           :postId="post.id"
           :isLikedUser="post.is_liked_user"
           :postLikeCount="post.post_like_count"
+          :postCommentCount="post.post_comment_count"
         />
       </div>
     </div>
