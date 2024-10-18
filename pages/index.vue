@@ -29,7 +29,6 @@ const login = async () => {
     store.isLogged = true;
     const token = useCookie("token");
     token.value = response.data.token;
-    useState<string>("name", () => response.data.name);
 
     return router.push({
       name: "dashboard",
