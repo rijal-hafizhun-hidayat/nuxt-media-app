@@ -163,7 +163,7 @@ const scrollToBottom = () => {
         <div>
           <NuxtImg
             class="object-cover object-top w-56 sm:w-10 h-10 sm:h-10"
-            :src="postComment.user.avatar ?? 'img/falling-into-darkness.jpg'"
+            :src="postComment.user.avatar ?? 'img/falling-into-darkness.png'"
           />
         </div>
         <div class="grid grid-rows-1 gap-1 max-w-3xl overflow-x-auto">

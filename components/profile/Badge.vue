@@ -43,7 +43,7 @@ const updateProfile = () => {
           <div>
             <NuxtImg
               class="object-cover object-top w-28 sm:w-40 h-28 sm:h-40"
-              :src="response.data?.avatar ?? 'img/falling-into-darkness.jpg'"
+              :src="response.data?.avatar ?? 'img/falling-into-darkness.png'"
             />
           </div>
           <div>
