@@ -9,25 +9,54 @@ interface FromUserResponse {
   avatar: string | null;
   name: string;
 }
+
+type TypeNotification = "LIKE_POST" | "COMMENT_POST";
+// interface TypeNotification {
+//   type_notification: "LIKE_POST" | "COMMENT_POST";
+// }
 interface NotificationResponse {
   id: number;
   from_user_id: number;
   message: string;
   to_user_id: number;
   is_read: boolean;
-  type_notification: "POST" | "COMMENT";
+  type_notification: TypeNotification;
   type_notification_id: number;
   created_date: Date;
   update_date: Date;
   from_user: FromUserResponse;
 }
+const router = useRouter();
+const { $api } = useNuxtApp();
 const notifications: Ref<Response> = ref({} as Response);
 const { data } = await useCustomFetch<Response>("notification");
 if (data.value) {
   notifications.value = data.value;
 }
-const clickNotification = (index: number) => {
-  console.log(index);
+const clickNotification = async (
+  notificationId: number,
+  typeNotification: TypeNotification,
+  notificationIsRead: boolean
+) => {
+  try {
+    if (notificationIsRead === false) {
+      const result = await $api(`notification/${notificationId}/is_read`, {
+        method: "patch",
+      });
+      console.log(result);
+    }
+    return router.push({
+      name: "notification-id",
+      params: {
+        id: notificationId,
+      },
+      query: {
+        type_notification: typeNotification,
+      },
+    });
+  } catch (error: any) {
+    console.log(error);
+  }
 };
 </script>
 <template>
@@ -37,8 +66,14 @@ const clickNotification = (index: number) => {
         <div
           v-for="notification in notifications.data"
           :key="notification.id"
-          @click="clickNotification(notification.id)"
-          class="flex hover:bg-gray-200 active:bg-gray-300 rounded p-2 hover:cursor-pointer transition ease-in-out duration-150 flex-row space-x-4"
+          @click="
+            clickNotification(
+              notification.id,
+              notification.type_notification,
+              notification.is_read
+            )
+          "
+          class="flex justify-start hover:bg-gray-200 active:bg-gray-300 rounded p-2 hover:cursor-pointer transition ease-in-out duration-150 space-x-4"
         >
           <div>
             <NuxtImg
@@ -55,6 +90,9 @@ const clickNotification = (index: number) => {
               <span class="font-bold">{{ notification.from_user.name }}</span>
               {{ notification.message }}
             </p>
+          </div>
+          <div v-if="notification.is_read === false" class="my-auto">
+            <p class="text-red-500 font-bold">NEW</p>
           </div>
         </div>
       </div>
