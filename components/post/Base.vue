@@ -87,6 +87,7 @@ const toProfile = (userId: number) => {
           :isLikedUser="post.is_liked_user"
           :postLikeCount="post.post_like_count"
           :postCommentCount="post.post_comment_count"
+          :userId="post.user_id"
         />
       </div>
     </div>
