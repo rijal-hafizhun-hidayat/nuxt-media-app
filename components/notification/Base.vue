@@ -4,16 +4,28 @@ interface Response {
   message: string;
   data: NotificationResponse[];
 }
+interface ResponseSuccessNotification {
+  statusCode: number;
+  message: string;
+  data: ResponseSuccessDataNotification;
+}
+interface ResponseSuccessDataNotification {
+  created_at: Date;
+  from_user_id: number;
+  id: number;
+  is_read: boolean;
+  message: string;
+  to_user_id: number;
+  type_notification: "POST_COMMENT" | "LIKE_COMMENT";
+  type_notification_id: number;
+  updated_at: Date;
+}
 interface FromUserResponse {
   id: number;
   avatar: string | null;
   name: string;
 }
-
 type TypeNotification = "LIKE_POST" | "COMMENT_POST";
-// interface TypeNotification {
-//   type_notification: "LIKE_POST" | "COMMENT_POST";
-// }
 interface NotificationResponse {
   id: number;
   from_user_id: number;
@@ -40,9 +52,12 @@ const clickNotification = async (
 ) => {
   try {
     if (notificationIsRead === false) {
-      const result = await $api(`notification/${notificationId}/is_read`, {
-        method: "patch",
-      });
+      const result: ResponseSuccessNotification = await $api(
+        `notification/${notificationId}/is_read`,
+        {
+          method: "patch",
+        }
+      );
       console.log(result);
     }
     return router.push({
