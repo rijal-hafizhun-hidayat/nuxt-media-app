@@ -7,6 +7,35 @@ interface Response {
   message: string;
   data: PostCommentResponse[];
 }
+interface ResponseSuccessComment {
+  statusCode: number;
+  message: string;
+  data: ResponseSuccessDataComment;
+}
+interface ResponseSuccessNotification {
+  statusCode: number;
+  message: string;
+  data: ResponseSuccessDataNotification;
+}
+interface ResponseSuccessDataNotification {
+  created_at: Date;
+  from_user_id: number;
+  id: number;
+  is_read: boolean;
+  message: string;
+  to_user_id: number;
+  type_notification: "POST_COMMENT" | "LIKE_COMMENT";
+  type_notification_id: number;
+  updated_at: Date;
+}
+interface ResponseSuccessDataComment {
+  comment: string;
+  created_at: Date;
+  id: number;
+  post_id: number;
+  updated_at: string;
+  user_id: number;
+}
 interface PostCommentResponse {
   comment: string;
   id: number;
@@ -28,6 +57,7 @@ const props = defineProps<{
 //console.log(props.postCommentCount);
 type ApiMethod = "delete" | "post";
 
+const resultCommentId: Ref<number | string> = ref("");
 const isDisable: Ref<boolean> = ref(false);
 const apiRoute: Ref<string> = ref("");
 const apiMethod: Ref<ApiMethod> = ref("post");
@@ -35,7 +65,6 @@ const showComment: Ref<boolean> = ref(false);
 const likeCount: Ref<number> = ref(props.postLikeCount);
 const commentCount: Ref<number> = ref(props.postCommentCount);
 const isLike: Ref<boolean> = ref(props.isLikedUser);
-const bottomEl: Ref<HTMLElement | null> = ref(null);
 const shouldRefresh: Ref<boolean> = ref(false);
 const isLoading: Ref<boolean> = ref(false);
 const form: Form = reactive({
@@ -98,48 +127,44 @@ if (error.value) {
 const sendComment = async () => {
   try {
     isLoading.value = true;
-    const result = await $api(`post/${props.postId}/comment`, {
-      method: "post",
-      body: {
-        comment: form.comment,
-      },
-    });
+    const resultSendComment: ResponseSuccessComment = await $api(
+      `post/${props.postId}/comment`,
+      {
+        method: "post",
+        body: {
+          comment: form.comment,
+        },
+      }
+    );
 
-    shouldRefresh.value = true;
-    // await refresh();
-    console.log(result);
+    console.log(resultSendComment);
+    resultCommentId.value = resultSendComment.data.id;
   } catch (error: any) {
     isLoading.value = false;
     console.log(error.data);
   } finally {
-    shouldRefresh.value = false;
+    shouldRefresh.value = shouldRefresh.value === true ? false : true;
     isLoading.value = false;
     form.comment = "";
     commentCount.value++;
-    //await nextTick();
-    // scrollToBottom();
   }
 
   try {
-    const result = await $api("notification", {
-      method: "post",
-      body: {
-        type_notification: "COMMENT_POST",
-        type_notification_id: props.postId,
-        to_user_id: props.userId,
-      },
-    });
-    console.log(result);
-  } catch (error: any) {
-    console.log(error.data);
-  }
-};
+    const resultSendNotification: ResponseSuccessDataNotification = await $api(
+      "notification",
+      {
+        method: "post",
+        body: {
+          type_notification: "COMMENT_POST",
+          type_notification_id: resultCommentId.value,
+          to_user_id: props.userId,
+        },
+      }
+    );
 
-const scrollToBottom = () => {
-  if (bottomEl.value) {
-    bottomEl.value.scrollIntoView({
-      behavior: "smooth",
-    });
+    console.log(resultSendNotification);
+  } catch (error) {
+    console.log(error);
   }
 };
 </script>
