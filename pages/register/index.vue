@@ -78,7 +78,7 @@ const register = async () => {
         <div>
           <BaseInputLabel>Password</BaseInputLabel>
           <BaseTextInput
-            type="text"
+            type="password"
             class="mt-1 block w-full"
             v-model="form.password"
             autofocus

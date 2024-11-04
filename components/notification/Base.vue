@@ -81,13 +81,6 @@ const clickNotification = async (
         <div
           v-for="notification in notifications.data"
           :key="notification.id"
-          @click="
-            clickNotification(
-              notification.id,
-              notification.type_notification,
-              notification.is_read
-            )
-          "
           class="flex justify-start hover:bg-gray-200 active:bg-gray-300 rounded p-2 hover:cursor-pointer transition ease-in-out duration-150 space-x-4"
         >
           <div>
