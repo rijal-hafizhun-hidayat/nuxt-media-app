@@ -1,17 +1,8 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const token = useCookie("token");
-  const store = useAuthStore();
+  const useToken = useCookie("token");
+  const useAuth = useAuthStore();
 
-  // const auth = store.auth;
-  //await store.me();
-  if (store.auth.length === 0) {
-    await store.me();
-  }
-  // console.log(store.auth);
-  // console.log(store.auth.length);
-  if (token.value) {
-    store.isLogged = true;
-  } else {
-    return navigateTo("/");
+  if (useToken.value && useAuth.isLogged === false) {
+    await useAuth.me();
   }
 });

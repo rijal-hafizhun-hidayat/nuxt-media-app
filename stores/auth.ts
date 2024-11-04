@@ -1,34 +1,84 @@
 import { defineStore } from "#imports";
-import { useName } from "~/composables/state";
+
+interface Form {
+  email: string;
+  password: string;
+}
+interface Response {
+  statusCode: number;
+  message: string;
+  data: ResponseAuth;
+}
+interface ResponseAuth {
+  name: string;
+  token: string;
+  role: ResponseUserRole[];
+}
+interface ResponseUserRole {
+  id: number;
+  name: string;
+  created_at: Date;
+  updated_at: Date;
+}
 
 export const useAuthStore = defineStore("auth", () => {
   const isLogged: Ref<boolean> = ref(false);
-  const auth: Ref<any> = ref([]);
+  const name: Ref<string | null> = ref(null);
+  const role: Ref<ResponseUserRole[] | []> = ref([]);
+  const token: Ref<string | null> = ref(null);
+  const useToken = useCookie<string | null>("token");
 
-  async function me() {
+  async function me(): Promise<void> {
     const { $api } = useNuxtApp();
 
     try {
-      const response = await $api("me", {
+      const result: Response = await $api("me", {
         method: "get",
       });
-
+      name.value = result.data.name;
+      role.value = result.data.role;
       isLogged.value = true;
-      auth.value = response;
-    } catch (error) {
-      console.log(error);
+      token.value = useToken.value;
+    } catch (error: any) {
+      if (error.data) {
+        console.log(error.data);
+      }
     }
   }
 
-  function reset() {
+  async function login(request: Form): Promise<void> {
+    const { $api } = useNuxtApp();
+
+    const result: Response = await $api("login", {
+      method: "post",
+      body: {
+        email: request.email,
+        password: request.password,
+      },
+    });
+
+    name.value = result.data.name;
+    role.value = result.data.role;
+    isLogged.value = true;
+    token.value = result.data.token;
+    useToken.value = result.data.token;
+  }
+
+  function logout(): void {
     isLogged.value = false;
-    auth.value = [];
+    name.value = null;
+    role.value = [];
+    token.value = null;
+    useToken.value = null;
   }
 
   return {
     isLogged,
-    auth,
+    name,
+    role,
+    token,
     me,
-    reset,
+    logout,
+    login,
   };
 });
