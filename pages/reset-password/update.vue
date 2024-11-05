@@ -1,4 +1,17 @@
 <script setup lang="ts">
+interface Result {
+  statusCode: number;
+  message: string;
+  data: ResultResetPassword;
+}
+interface ResultResetPassword {
+  expired_at: Date;
+  token: number;
+}
+interface Validation {
+  statusCode: number;
+  errors: Record<string, string[]>;
+}
 interface Form {
   token: string;
   password: string;
@@ -7,8 +20,8 @@ interface Form {
 
 const router = useRouter();
 const route = useRoute();
-const { $api } = useNuxtApp();
-const validation: Ref<any> = ref([]);
+const { $api, $swal } = useNuxtApp();
+const validation: Ref<Validation | null> = ref(null);
 const isLoadingReSendToken: Ref<boolean> = ref(false);
 const isLoading: Ref<boolean> = ref(false);
 const form: Form = reactive({
@@ -20,7 +33,7 @@ const form: Form = reactive({
 const updatePassword = async () => {
   try {
     isLoading.value = true;
-    const result = await $api("reset-password/update", {
+    const result: Result = await $api("reset-password/update", {
       method: "patch",
       body: {
         token: parseInt(form.token),
@@ -28,12 +41,26 @@ const updatePassword = async () => {
       },
     });
 
-    validation.value = result;
-    console.log(validation.value);
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
+    await router.push({
+      name: "index",
+    });
   } catch (error: any) {
     isLoading.value = false;
-    validation.value = error.data;
-    console.log(validation.value);
+    if (error.data && error.data.statusCode === 404) {
+      validation.value = error.data;
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    } else if (error.data && error.data.statusCode === 400) {
+      validation.value = error.data;
+    }
   } finally {
     isLoading.value = false;
   }
@@ -42,26 +69,34 @@ const updatePassword = async () => {
 const reSendToken = async () => {
   try {
     isLoadingReSendToken.value = true;
-    const result = await $api("reset-password", {
+    const result: Result = await $api("reset-password", {
       method: "post",
       body: {
         email: form.email,
       },
     });
 
-    validation.value = result;
-    console.log(validation.value);
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
   } catch (error: any) {
     isLoadingReSendToken.value = false;
-    validation.value = error.data;
-    console.log(validation.value);
+    if (error.data) {
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    }
   } finally {
     isLoadingReSendToken.value = false;
   }
 };
 
-const loginPage = () => {
-  return router.push({
+const loginPage = async () => {
+  await router.push({
     name: "index",
   });
 };
@@ -79,14 +114,6 @@ const numbersOnly = (evt: any) => {
 <template>
   <NuxtLayout name="login-layout">
     <BaseInfoAlert :message="'silahkan cek email anda'" />
-    <BaseDangerAlert
-      v-if="validation.statusCode === 404"
-      :message="validation.errors"
-    />
-    <BaseSuccessAlert
-      v-if="validation.statusCode === 200"
-      :message="validation.message"
-    />
     <form @submit.prevent="updatePassword()" class="space-y-4">
       <div>
         <BaseInputLabel>email</BaseInputLabel>
@@ -96,8 +123,12 @@ const numbersOnly = (evt: any) => {
           class="bloxk w-full mt-1"
         />
         <BaseInputError
-          v-if="validation.statusCode === 400 && validation.errors.email"
-          :message="validation.errors.email._errors[0]"
+          v-if="
+            validation &&
+            validation.statusCode === 400 &&
+            validation.errors.email
+          "
+          :message="validation.errors.email[0]"
         />
       </div>
       <div>
@@ -109,8 +140,12 @@ const numbersOnly = (evt: any) => {
           class="block w-full mt-1"
         />
         <BaseInputError
-          v-if="validation.statusCode === 400 && validation.errors.token"
-          :message="validation.errors.token._errors[0]"
+          v-if="
+            validation &&
+            validation.statusCode === 400 &&
+            validation.errors.token
+          "
+          :message="validation.errors.token[0]"
         />
       </div>
       <div>
@@ -121,8 +156,12 @@ const numbersOnly = (evt: any) => {
           type="password"
         />
         <BaseInputError
-          v-if="validation.statusCode === 400 && validation.errors.password"
-          :message="validation.errors.password._errors[0]"
+          v-if="
+            validation &&
+            validation.statusCode === 400 &&
+            validation.errors.password
+          "
+          :message="validation.errors.password[0]"
         />
       </div>
       <div class="flex space-x-4">

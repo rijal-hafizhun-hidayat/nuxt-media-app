@@ -19,13 +19,14 @@ const form: Form = reactive({
 
 const login = async (): Promise<void> => {
   try {
+    isLoading.value = true;
     await useStore.login(form);
     await router.push({
       name: "dashboard",
     });
   } catch (error: any) {
+    isLoading.value = false;
     if (error.data) {
-      isLoading.value = false;
       validation.value = error.data;
       console.log(validation.value);
     }
@@ -38,7 +39,7 @@ const login = async (): Promise<void> => {
   <NuxtLayout name="login-layout">
     <BaseDangerAlert
       v-if="validation && validation.statusCode === 404"
-      :message="validation!.errors"
+      :message="validation.errors"
     />
     <form @submit.prevent="login()">
       <div class="space-y-4">

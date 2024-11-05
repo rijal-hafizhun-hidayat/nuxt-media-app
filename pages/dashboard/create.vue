@@ -2,24 +2,59 @@
 interface Form {
   content: string;
 }
-const { $api } = useNuxtApp();
-const validation: Ref<any> = ref([]);
+interface Result {
+  statusCode: number;
+  message: string;
+  data: ResultPost;
+}
+interface ResultPost {
+  id: number;
+  user_id: number;
+  content: string;
+}
+interface Validation {
+  statusCode: number;
+  errors: Record<string, string[]>;
+}
+
+const router = useRouter();
+const isLoading: Ref<boolean> = ref(false);
+const { $api, $swal } = useNuxtApp();
+const validation: Ref<Validation | null> = ref(null);
 const form: Form = reactive({
   content: "",
 });
+
 const send = async () => {
   try {
-    const result = await $api("post", {
+    isLoading.value = true;
+    const result: Result = await $api("post", {
       method: "post",
       body: {
         content: form.content,
       },
     });
-
-    validation.value = result;
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
+    await router.push({
+      name: "dashboard",
+    });
   } catch (error: any) {
-    validation.value = error.data;
-    console.log(validation.value);
+    isLoading.value = false;
+    if (error.data && error.data.statusCode === 404) {
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    } else if (error.data && error.data.statusCode === 400) {
+      validation.value = error.data;
+    }
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -36,10 +71,6 @@ const send = async () => {
     </template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
-        <BaseSuccessAlert
-          v-if="validation.statusCode === 200"
-          :message="validation.message"
-        />
         <form @submit.prevent="send()" class="space-y-4">
           <div>
             <BaseInputLabel>Masukkan Isi Postingan</BaseInputLabel>
@@ -49,12 +80,21 @@ const send = async () => {
               class="block mt-1 w-full"
             />
             <BaseInputError
-              v-if="validation.statusCode === 400 && validation.errors.content"
-              :message="validation.errors.content._errors[0]"
+              v-if="
+                validation &&
+                validation.statusCode === 400 &&
+                validation.errors.content
+              "
+              :message="validation.errors.content[0]"
             />
           </div>
           <div>
-            <BasePrimaryButton type="submit">Simpan</BasePrimaryButton>
+            <BasePrimaryButton
+              :disabled="isLoading == true"
+              :class="{ 'opacity-75': isLoading == true }"
+              type="submit"
+              >Simpan</BasePrimaryButton
+            >
           </div>
         </form>
       </div>
