@@ -1,5 +1,7 @@
 export default defineNuxtPlugin((nuxtApp) => {
-  const token = useCookie<string | null>("token");
+  const token = useCookie<string | null>("token", {
+    secure: true,
+  });
   const useAuth = useAuthStore();
 
   const api = $fetch.create({

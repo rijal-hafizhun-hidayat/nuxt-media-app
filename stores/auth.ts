@@ -26,7 +26,9 @@ export const useAuthStore = defineStore("auth", () => {
   const name: Ref<string | null> = ref(null);
   const role: Ref<ResponseUserRole[] | []> = ref([]);
   const token: Ref<string | null> = ref(null);
-  const useToken = useCookie<string | null>("token");
+  const useToken = useCookie<string | null>("token", {
+    secure: true,
+  });
 
   async function me(): Promise<void> {
     const { $api } = useNuxtApp();

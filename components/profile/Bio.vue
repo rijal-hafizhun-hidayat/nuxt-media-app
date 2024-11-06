@@ -2,31 +2,55 @@
 const props = defineProps<{
   bio: string | null;
 }>();
+
 interface Form {
   bio: string;
 }
-const { $api } = useNuxtApp();
+interface Result {
+  statusCode: number;
+  message: string;
+  data: ResultUpdateBio;
+}
+interface ResultUpdateBio {
+  bio: string;
+}
+interface Validation {
+  statusCode: number;
+  errors: Record<string, string[]>;
+}
+
+const { $api, $swal } = useNuxtApp();
 const isLoading: Ref<boolean> = ref(false);
-const validation: Ref<any> = ref([]);
+const validation: Ref<Validation | null> = ref(null);
 const form: Form = reactive({
   bio: props.bio ?? "",
 });
 const update = async () => {
   try {
     isLoading.value = true;
-    const result = await $api("profile/update-bio", {
+    const result: Result = await $api("profile/update-bio", {
       method: "patch",
       body: {
         bio: form.bio,
       },
     });
 
-    validation.value = result;
-    console.log(validation.value);
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
   } catch (error: any) {
+    if (error.data && error.data.statusCode === 400) {
+      validation.value = error.data;
+    } else if (error.data && error.data.statusCode === 404) {
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    }
     isLoading.value = false;
-    validation.value = error.data;
-    console.log(validation.value);
   } finally {
     isLoading.value = false;
   }
@@ -36,14 +60,6 @@ const update = async () => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
       <h1 class="font-bold mb-4">Update Bio</h1>
-      <BaseSuccessAlert
-        v-if="validation.statusCode === 200"
-        :message="validation.message"
-      />
-      <BaseDangerAlert
-        v-if="validation.statusCode === 404"
-        :message="validation.errors"
-      />
       <form @submit.prevent="update()" class="space-y-4">
         <div>
           <BaseInputLabel>Biografi</BaseInputLabel>
@@ -53,8 +69,12 @@ const update = async () => {
             v-model="form.bio"
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.bio"
-            :message="validation.errors.bio._errors[0]"
+            v-if="
+              validation &&
+              validation.statusCode === 400 &&
+              validation.errors.bio
+            "
+            :message="validation.errors.bio[0]"
           />
         </div>
         <div>
