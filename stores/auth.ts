@@ -32,6 +32,8 @@ export const useAuthStore = defineStore("auth", () => {
     secure: true,
   });
 
+  const isRoleUser = computed(() => role.value[0].name === "user");
+
   async function me(): Promise<void> {
     const { $api } = useNuxtApp();
 
@@ -86,6 +88,7 @@ export const useAuthStore = defineStore("auth", () => {
     name,
     role,
     token,
+    isRoleUser,
     me,
     logout,
     login,
