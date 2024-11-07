@@ -10,6 +10,7 @@ interface Response {
   data: ResponseAuth;
 }
 interface ResponseAuth {
+  id: number;
   name: string;
   token: string;
   role: ResponseUserRole[];
@@ -23,6 +24,7 @@ interface ResponseUserRole {
 
 export const useAuthStore = defineStore("auth", () => {
   const isLogged: Ref<boolean> = ref(false);
+  const userId: Ref<number | null> = ref(null);
   const name: Ref<string | null> = ref(null);
   const role: Ref<ResponseUserRole[] | []> = ref([]);
   const token: Ref<string | null> = ref(null);
@@ -37,6 +39,8 @@ export const useAuthStore = defineStore("auth", () => {
       const result: Response = await $api("me", {
         method: "get",
       });
+
+      userId.value = result.data.id;
       name.value = result.data.name;
       role.value = result.data.role;
       isLogged.value = true;
@@ -59,6 +63,7 @@ export const useAuthStore = defineStore("auth", () => {
       },
     });
 
+    userId.value = result.data.id;
     name.value = result.data.name;
     role.value = result.data.role;
     isLogged.value = true;
@@ -68,6 +73,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   function logout(): void {
     isLogged.value = false;
+    userId.value = null;
     name.value = null;
     role.value = [];
     token.value = null;
@@ -76,6 +82,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   return {
     isLogged,
+    userId,
     name,
     role,
     token,
