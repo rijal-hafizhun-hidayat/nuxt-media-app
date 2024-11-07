@@ -3,8 +3,18 @@ interface Form {
   newPassword: string;
   oldPassword: string;
 }
-const { $api } = useNuxtApp();
-const validation: Ref<any> = ref([]);
+interface Validation {
+  statusCode: number;
+  errors: Record<string, string[]>;
+}
+interface Result {
+  statusCode: number;
+  message: string;
+}
+
+const isLoading: Ref<boolean> = ref(false);
+const { $api, $swal } = useNuxtApp();
+const validation: Ref<Validation | null> = ref(null);
 const form: Form = reactive({
   oldPassword: "",
   newPassword: "",
@@ -12,7 +22,8 @@ const form: Form = reactive({
 
 const update = async () => {
   try {
-    const result = await $api("profile/update-password", {
+    isLoading.value = true;
+    const result: Result = await $api("profile/update-password", {
       method: "patch",
       body: {
         oldPassword: form.oldPassword,
@@ -20,10 +31,27 @@ const update = async () => {
       },
     });
 
-    validation.value = result;
+    form.newPassword = "";
+    form.oldPassword = "";
+
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
   } catch (error: any) {
-    validation.value = error.data;
-    console.log(validation.value);
+    if (error.data && error.data.statusCode === 400) {
+      validation.value = error.data;
+    } else if (error.data && error.data.statusCode === 404) {
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    }
+    isLoading.value = false;
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -31,14 +59,6 @@ const update = async () => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
       <h1 class="font-bold mb-4">Update Password</h1>
-      <BaseSuccessAlert
-        v-if="validation.statusCode === 200"
-        :message="validation.message"
-      />
-      <BaseDangerAlert
-        v-if="validation.statusCode === 404"
-        :message="validation.errors"
-      />
       <form @submit.prevent="update()" class="space-y-4">
         <div>
           <BaseInputLabel
@@ -47,32 +67,41 @@ const update = async () => {
           >
           <BaseTextInput
             v-model="form.oldPassword"
-            type="text"
+            type="password"
             class="mt-1 block w-full"
           />
           <BaseInputError
             v-if="
-              validation.statusCode === 400 && validation.errors.oldPassword
+              validation &&
+              validation.statusCode === 400 &&
+              validation.errors.oldPassword
             "
-            :message="validation.errors.oldPassword._errors[0]"
+            :message="validation.errors.oldPassword[0]"
           />
         </div>
         <div>
           <BaseInputLabel>masukkan password baru</BaseInputLabel>
           <BaseTextInput
             v-model="form.newPassword"
-            type="text"
+            type="password"
             class="mt-1 block w-full"
           />
           <BaseInputError
             v-if="
-              validation.statusCode === 400 && validation.errors.newPassword
+              validation &&
+              validation.statusCode === 400 &&
+              validation.errors.newPassword
             "
-            :message="validation.errors.newPassword._errors[0]"
+            :message="validation.errors.newPassword[0]"
           />
         </div>
         <div>
-          <BasePrimaryButton type="submit">Simpan</BasePrimaryButton>
+          <BasePrimaryButton
+            :disabled="isLoading == true"
+            :class="{ 'opacity-75': isLoading == true }"
+            type="submit"
+            >Simpan</BasePrimaryButton
+          >
         </div>
       </form>
     </div>

@@ -12,22 +12,6 @@ interface ResponseSuccessComment {
   message: string;
   data: ResponseSuccessDataComment;
 }
-interface ResponseSuccessNotification {
-  statusCode: number;
-  message: string;
-  data: ResponseSuccessDataNotification;
-}
-interface ResponseSuccessDataNotification {
-  created_at: Date;
-  from_user_id: number;
-  id: number;
-  is_read: boolean;
-  message: string;
-  to_user_id: number;
-  type_notification: "POST_COMMENT" | "LIKE_COMMENT";
-  type_notification_id: number;
-  updated_at: Date;
-}
 interface ResponseSuccessDataComment {
   comment: string;
   created_at: Date;
@@ -95,23 +79,6 @@ const likePost = async () => {
   } finally {
     isDisable.value = false;
   }
-
-  if (apiMethod.value === "post") {
-    try {
-      const result = await $api("notification", {
-        method: "post",
-        body: {
-          type_notification: "LIKE_POST",
-          type_notification_id: props.postId,
-          to_user_id: props.userId,
-        },
-      });
-
-      console.log(result);
-    } catch (error: any) {
-      console.log(error.data);
-    }
-  }
 };
 const {
   data: postComments,
@@ -120,7 +87,6 @@ const {
 } = await useCustomFetch<Response>(`post/${props.postId}/comment`, {
   watch: [shouldRefresh],
 });
-console.log(postComments);
 if (error.value) {
   console.log(error.value);
 }
@@ -147,24 +113,6 @@ const sendComment = async () => {
     isLoading.value = false;
     form.comment = "";
     commentCount.value++;
-  }
-
-  try {
-    const resultSendNotification: ResponseSuccessDataNotification = await $api(
-      "notification",
-      {
-        method: "post",
-        body: {
-          type_notification: "COMMENT_POST",
-          type_notification_id: resultCommentId.value,
-          to_user_id: props.userId,
-        },
-      }
-    );
-
-    console.log(resultSendNotification);
-  } catch (error) {
-    console.log(error);
   }
 };
 </script>
