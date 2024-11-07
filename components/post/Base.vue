@@ -24,7 +24,7 @@ interface UserPostResponse {
   id: number;
   name: string;
 }
-const store = useAuthStore();
+const authStore = useAuthStore();
 const router = useRouter();
 const posts: Ref<Response> = ref({} as Response);
 const apiRoute: Ref<string> = ref("");
@@ -48,7 +48,7 @@ if (data.value) {
 
 const toProfile = (userId: number) => {
   const routePage: any = {};
-  if (store.auth.data.id === userId) {
+  if (authStore.userId === userId) {
     routePage.name = "profile";
   } else {
     routePage.name = "profile-id";

@@ -9,7 +9,7 @@ interface Validation {
 }
 
 const router = useRouter();
-const useStore = useAuthStore();
+const authStore = useAuthStore();
 const isLoading: Ref<boolean> = ref(false);
 const validation: Ref<Validation | null> = ref(null);
 const form: Form = reactive({
@@ -20,7 +20,7 @@ const form: Form = reactive({
 const login = async (): Promise<void> => {
   try {
     isLoading.value = true;
-    await useStore.login(form);
+    await authStore.login(form);
     await router.push({
       name: "dashboard",
     });

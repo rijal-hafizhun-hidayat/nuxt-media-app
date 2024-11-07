@@ -3,17 +3,32 @@ const props = defineProps<{
   emailVerifiedAt: Date | null;
 }>();
 
+interface Result {
+  statusCode: number;
+  message: string;
+  data: ResultVerif;
+}
+interface ResultVerif {
+  email_verified_at: Date | null;
+}
+
 const { $api, $swal } = useNuxtApp();
 const validation: Ref<any> = ref([]);
 const emailVerifiedAt: Ref<Date | null> = ref(props.emailVerifiedAt);
 
 const update = async () => {
   try {
-    const result = await $api("profile/verif", {
+    const result: Result = await $api("profile/verif", {
       method: "patch",
     });
 
-    console.log(result);
+    emailVerifiedAt.value = result.data.email_verified_at;
+
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
   } catch (error: any) {
     if (error.data && error.data.statusCode === 400) {
       validation.value = error.data;
@@ -34,7 +49,12 @@ const update = async () => {
       <div class="whitespace-nowrap">
         <form @submit.prevent="update()" class="space-y-4">
           <div>
-            <BasePrimaryButton type="submit">Verif User</BasePrimaryButton>
+            <BasePrimaryButton v-if="emailVerifiedAt === null" type="submit"
+              >Verif User</BasePrimaryButton
+            >
+            <BaseSuccessButton v-else type="button"
+              >User Already Verified</BaseSuccessButton
+            >
           </div>
         </form>
       </div>
