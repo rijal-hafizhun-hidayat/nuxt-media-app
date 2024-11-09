@@ -22,7 +22,7 @@ const login = async (): Promise<void> => {
     isLoading.value = true;
     await authStore.login(form);
     await router.push({
-      name: "dashboard",
+      name: "post",
     });
   } catch (error: any) {
     isLoading.value = false;

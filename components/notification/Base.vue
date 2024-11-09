@@ -40,12 +40,13 @@ interface NotificationResponse {
 }
 const router = useRouter();
 const { $api } = useNuxtApp();
-const notifications: Ref<Response> = ref({} as Response);
+const notifications: Ref<Response | null> = ref(null);
 const { data } = await useCustomFetch<Response>("notification");
 if (data.value) {
   notifications.value = data.value;
+  console.log(notifications.value);
 }
-const clickNotification = async (
+const updateNotificationIsRead = async (
   notificationId: number,
   typeNotification: TypeNotification,
   notificationIsRead: boolean
@@ -76,11 +77,21 @@ const clickNotification = async (
 </script>
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="bg-white mt-10 px-4 py-2 rounded shadow-md overflow-x-auto">
-      <div class="space-y-5">
+    <div class="bg-white mt-10 px-4 py-5 rounded shadow-md overflow-x-auto">
+      <div
+        v-if="notifications && notifications.data.length > 0"
+        class="space-y-5"
+      >
         <div
           v-for="notification in notifications.data"
           :key="notification.id"
+          @click="
+            updateNotificationIsRead(
+              notification.id,
+              notification.type_notification,
+              notification.is_read
+            )
+          "
           class="flex justify-start hover:bg-gray-200 active:bg-gray-300 rounded p-2 hover:cursor-pointer transition ease-in-out duration-150 space-x-4"
         >
           <div>
@@ -103,6 +114,9 @@ const clickNotification = async (
             <p class="text-red-500 font-bold">NEW</p>
           </div>
         </div>
+      </div>
+      <div v-else>
+        <p class="text-center">No Notification</p>
       </div>
     </div>
   </div>
