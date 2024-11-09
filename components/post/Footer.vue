@@ -36,7 +36,7 @@ const props = defineProps<{
   isLikedUser: boolean;
   postLikeCount: number;
   postCommentCount: number;
-  userId: number;
+  postUserId: number;
 }>();
 //console.log(props.postCommentCount);
 type ApiMethod = "delete" | "post";
@@ -79,6 +79,14 @@ const likePost = async () => {
   } finally {
     isDisable.value = false;
   }
+
+  if (apiMethod.value === "post") {
+    try {
+      await NotificationUtils.storeNotification(props.postUserId, "LIKE");
+    } catch (error: any) {
+      console.log(error.data);
+    }
+  }
 };
 const {
   data: postComments,
@@ -102,8 +110,6 @@ const sendComment = async () => {
         },
       }
     );
-
-    console.log(resultSendComment);
     resultCommentId.value = resultSendComment.data.id;
   } catch (error: any) {
     isLoading.value = false;
@@ -113,6 +119,12 @@ const sendComment = async () => {
     isLoading.value = false;
     form.comment = "";
     commentCount.value++;
+  }
+
+  try {
+    await NotificationUtils.storeNotification(props.postUserId, "COMMENT");
+  } catch (error: any) {
+    console.log(error.data);
   }
 };
 </script>
