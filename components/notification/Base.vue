@@ -16,7 +16,7 @@ interface ResponseSuccessDataNotification {
   is_read: boolean;
   message: string;
   to_user_id: number;
-  type_notification: "POST_COMMENT" | "LIKE_COMMENT";
+  type_notification: "COMMENT" | "LIKE";
   type_notification_id: number;
   updated_at: Date;
 }
@@ -25,7 +25,7 @@ interface FromUserResponse {
   avatar: string | null;
   name: string;
 }
-type TypeNotification = "LIKE_POST" | "COMMENT_POST";
+type TypeNotification = "LIKE" | "COMMENT";
 interface NotificationResponse {
   id: number;
   from_user_id: number;
