@@ -2,58 +2,41 @@
 interface Response {
   statusCode: number;
   message: string;
-  data: NotificationResponse[];
-}
-interface ResponseSuccessNotification {
-  statusCode: number;
-  message: string;
-  data: ResponseSuccessDataNotification;
-}
-interface ResponseSuccessDataNotification {
-  created_at: Date;
-  from_user_id: number;
-  id: number;
-  is_read: boolean;
-  message: string;
-  to_user_id: number;
-  type_notification: "COMMENT" | "LIKE";
-  type_notification_id: number;
-  updated_at: Date;
+  data: Notification[];
 }
 interface FromUserResponse {
   id: number;
   avatar: string | null;
   name: string;
 }
-type TypeNotification = "LIKE" | "COMMENT";
-interface NotificationResponse {
+interface Notification {
   id: number;
   from_user_id: number;
   message: string;
+  content_reference: string;
   to_user_id: number;
   is_read: boolean;
-  type_notification: TypeNotification;
-  type_notification_id: number;
+  notification_type_id: number;
   created_date: Date;
   update_date: Date;
   from_user: FromUserResponse;
 }
 const router = useRouter();
 const { $api } = useNuxtApp();
-const notifications: Ref<Response | null> = ref(null);
+const notifications: Ref<Notification[] | null> = ref(null);
 const { data } = await useCustomFetch<Response>("notification");
 if (data.value) {
-  notifications.value = data.value;
+  notifications.value = data.value.data;
   console.log(notifications.value);
 }
 const updateNotificationIsRead = async (
   notificationId: number,
-  typeNotification: TypeNotification,
-  notificationIsRead: boolean
+  notificationIsRead: boolean,
+  contentReference: string
 ) => {
   try {
     if (notificationIsRead === false) {
-      const result: ResponseSuccessNotification = await $api(
+      const result: Response = await $api(
         `notification/${notificationId}/is_read`,
         {
           method: "patch",
@@ -62,13 +45,7 @@ const updateNotificationIsRead = async (
       console.log(result);
     }
     return router.push({
-      name: "notification-id",
-      params: {
-        id: notificationId,
-      },
-      query: {
-        type_notification: typeNotification,
-      },
+      path: `${contentReference}`,
     });
   } catch (error: any) {
     console.log(error);
@@ -78,18 +55,15 @@ const updateNotificationIsRead = async (
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-5 rounded shadow-md overflow-x-auto">
-      <div
-        v-if="notifications && notifications.data.length > 0"
-        class="space-y-5"
-      >
+      <div v-if="notifications && notifications.length > 0" class="space-y-5">
         <div
-          v-for="notification in notifications.data"
+          v-for="notification in notifications"
           :key="notification.id"
           @click="
             updateNotificationIsRead(
               notification.id,
-              notification.type_notification,
-              notification.is_read
+              notification.is_read,
+              notification.content_reference
             )
           "
           class="flex justify-start hover:bg-gray-200 active:bg-gray-300 rounded p-2 hover:cursor-pointer transition ease-in-out duration-150 space-x-4"

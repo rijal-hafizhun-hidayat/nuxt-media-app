@@ -1,5 +1,3 @@
-type TypeNotification = "LIKE" | "COMMENT";
-
 interface Result {
   statusCode: number;
   message: string;
@@ -11,14 +9,16 @@ interface Notification {
   to_user_id: number;
   message: string;
   is_read: boolean;
-  type_notification: TypeNotification;
+  notification_type_id: number;
   created_at: Date;
   updated_at: Date;
 }
 export class NotificationUtils {
   static async storeNotification(
     toUserId: number,
-    typeNotification: TypeNotification
+    message: string,
+    notificationTypeId: number,
+    url: string
   ): Promise<Result> {
     const { $api } = useNuxtApp();
 
@@ -26,7 +26,9 @@ export class NotificationUtils {
       method: "post",
       body: {
         to_user_id: toUserId,
-        type_notification: typeNotification,
+        message: message,
+        notification_type_id: notificationTypeId,
+        content_reference: url,
       },
     });
 
