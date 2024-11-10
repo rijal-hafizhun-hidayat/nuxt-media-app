@@ -82,7 +82,12 @@ const likePost = async () => {
 
   if (apiMethod.value === "post") {
     try {
-      await NotificationUtils.storeNotification(props.postUserId, "LIKE");
+      await NotificationUtils.storeNotification(
+        props.postUserId,
+        "menyukai postinganmu",
+        1,
+        `/post/${props.postId}`
+      );
     } catch (error: any) {
       console.log(error.data);
     }
@@ -122,7 +127,12 @@ const sendComment = async () => {
   }
 
   try {
-    await NotificationUtils.storeNotification(props.postUserId, "COMMENT");
+    await NotificationUtils.storeNotification(
+      props.postUserId,
+      "mengomentari postinganmu",
+      2,
+      `/post/${props.postId}`
+    );
   } catch (error: any) {
     console.log(error.data);
   }

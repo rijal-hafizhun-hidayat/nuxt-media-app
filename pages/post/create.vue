@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: ["auth-middleware"],
+});
+
 interface Form {
   content: string;
 }
