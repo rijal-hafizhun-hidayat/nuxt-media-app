@@ -4,7 +4,10 @@ definePageMeta({
 });
 
 const route = useRoute();
-console.log(route.params.id);
+const { data } = await useCustomFetch(`post/${route.params.id}`);
+if (data.value) {
+  console.log(data.value);
+}
 </script>
 <template>
   <NuxtLayout name="dashboard-layout">
