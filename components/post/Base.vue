@@ -23,6 +23,7 @@ interface PostResponse {
 interface UserPostResponse {
   id: number;
   name: string;
+  avatar: string;
 }
 const authStore = useAuthStore();
 const router = useRouter();
@@ -68,6 +69,12 @@ const toProfile = (userId: number) => {
       <div class="space-y-4">
         <div class="flex space-x-4">
           <div>
+            <NuxtImg
+              class="object-cover object-top w-28 sm:w-10 h-28 sm:h-10"
+              :src="post.user.avatar ?? 'img/falling-into-darkness.png'"
+            />
+          </div>
+          <div class="my-auto">
             <p
               @click="toProfile(post.user_id)"
               class="cursor-pointer font-bold capitalize"
@@ -75,7 +82,7 @@ const toProfile = (userId: number) => {
               {{ post.user.name }}
             </p>
           </div>
-          <div>
+          <div class="my-auto">
             <p class="text-green-500 font-bold">online</p>
           </div>
         </div>

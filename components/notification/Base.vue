@@ -4,7 +4,7 @@ interface Response {
   message: string;
   data: Notification[];
 }
-interface FromUserResponse {
+interface FromUser {
   id: number;
   avatar: string | null;
   name: string;
@@ -19,8 +19,16 @@ interface Notification {
   notification_type_id: number;
   created_date: Date;
   update_date: Date;
-  from_user: FromUserResponse;
+  from_user: FromUser;
+  notification_type: NotificationType;
 }
+interface NotificationType {
+  id: number;
+  name: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 const router = useRouter();
 const { $api } = useNuxtApp();
 const notifications: Ref<Notification[] | null> = ref(null);
@@ -32,7 +40,8 @@ if (data.value) {
 const updateNotificationIsRead = async (
   notificationId: number,
   notificationIsRead: boolean,
-  contentReference: string
+  contentReference: string,
+  notificationTypeName: string
 ) => {
   try {
     if (notificationIsRead === false) {
@@ -45,7 +54,10 @@ const updateNotificationIsRead = async (
       console.log(result);
     }
     return router.push({
-      path: `${contentReference}`,
+      path: contentReference,
+      query: {
+        notification_type: notificationTypeName,
+      },
     });
   } catch (error: any) {
     console.log(error);
@@ -63,7 +75,8 @@ const updateNotificationIsRead = async (
             updateNotificationIsRead(
               notification.id,
               notification.is_read,
-              notification.content_reference
+              notification.content_reference,
+              notification.notification_type.name
             )
           "
           class="flex justify-start hover:bg-gray-200 active:bg-gray-300 rounded p-2 hover:cursor-pointer transition ease-in-out duration-150 space-x-4"
