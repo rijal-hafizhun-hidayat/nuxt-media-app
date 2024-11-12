@@ -90,7 +90,7 @@ const sendComment = async () => {
       >
         <div>
           <NuxtImg
-            class="object-cover object-top w-56 sm:w-10 h-10 sm:h-10"
+            class="object-cover object-top w-10 sm:w-10 h-10 sm:h-10"
             :src="postComment.user.avatar ?? 'img/falling-into-darkness.png'"
           />
         </div>

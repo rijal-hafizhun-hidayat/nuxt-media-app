@@ -5,6 +5,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   });
   const useAuth = useAuthStore();
 
+  if (!useToken.value) {
+    useAuth.logout();
+    return navigateTo("/");
+  }
+
   if (useToken.value && useAuth.isLogged === false) {
     await useAuth.me();
   }

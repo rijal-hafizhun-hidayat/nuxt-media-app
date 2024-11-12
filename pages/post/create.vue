@@ -20,11 +20,22 @@ interface Validation {
   statusCode: number;
   errors: Record<string, string[]>;
 }
+interface FileUpload {
+  file: File | string;
+  name: String;
+  size: Number;
+  type: String;
+  fileExtention: String;
+  url: String;
+  isImage: Boolean;
+  isUploaded: Boolean;
+}
 
 const router = useRouter();
 const isLoading: Ref<boolean> = ref(false);
 const { $api, $swal } = useNuxtApp();
 const validation: Ref<Validation | null> = ref(null);
+const file: Ref<File | null> = ref(null);
 const form: Form = reactive({
   content: "",
 });
@@ -43,8 +54,8 @@ const send = async () => {
       text: result.message,
       icon: "success",
     });
-    await router.push({
-      name: "dashboard",
+    router.push({
+      name: "post",
     });
   } catch (error: any) {
     isLoading.value = false;
@@ -60,6 +71,11 @@ const send = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const getUploadData = (dataFile: FileUpload) => {
+  file.value = dataFile.file as File;
+  console.log(file.value);
 };
 </script>
 <template>
@@ -90,6 +106,15 @@ const send = async () => {
                 validation.errors.content
               "
               :message="validation.errors.content[0]"
+            />
+          </div>
+          <div>
+            <BaseInputLabel>Upload File</BaseInputLabel>
+            <BaseFileUpload
+              :maxSize="2"
+              :accept="'mp4,mkv'"
+              class="block mt-1 w-full"
+              @file-upload="getUploadData"
             />
           </div>
           <div>
