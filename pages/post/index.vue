@@ -5,7 +5,7 @@ definePageMeta({
 const router = useRouter();
 const createPost = () => {
   return router.push({
-    name: "dashboard-create",
+    name: "post-create",
   });
 };
 </script>

@@ -70,7 +70,7 @@ const toProfile = (userId: number) => {
         <div class="flex space-x-4">
           <div>
             <NuxtImg
-              class="object-cover object-top w-28 sm:w-10 h-28 sm:h-10"
+              class="object-cover object-top w-10 sm:w-10 h-10 sm:h-10"
               :src="post.user.avatar ?? 'img/falling-into-darkness.png'"
             />
           </div>
