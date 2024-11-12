@@ -106,6 +106,7 @@ const resetFileInput = () => {
   fileUpload.isImage = false;
   fileUpload.isUploaded = false;
   filePlaceHolder.value = "no file chosen";
+  sendDataToParent();
 };
 
 const sendDataToParent = () => {
