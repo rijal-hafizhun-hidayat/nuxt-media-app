@@ -9,9 +9,16 @@ interface Form {
 interface Result {
   statusCode: number;
   message: string;
-  data: ResultPost;
+  data: Post | PostFile;
 }
-interface ResultPost {
+interface PostFile {
+  id: number;
+  post_id: number;
+  file: string;
+  created_at: Date;
+  updated_at: Date;
+}
+interface Post {
   id: number;
   user_id: number;
   content: string;
@@ -23,7 +30,7 @@ interface Validation {
 interface FileUpload {
   file: File | string;
   name: String;
-  size: Number;
+  size: number;
   type: String;
   fileExtention: String;
   url: String;
@@ -54,6 +61,22 @@ const send = async () => {
       text: result.message,
       icon: "success",
     });
+
+    if (file.value !== null) {
+      await $api("post_file", {
+        method: "post",
+        body: {
+          post_id: result.data.id,
+        },
+      });
+
+      const formData: FormData = new FormData();
+      formData.append("file", file.value);
+      await $api(`storage/post_file/${result.data.id}/file`, {
+        method: "patch",
+        body: formData,
+      });
+    }
     router.push({
       name: "post",
     });
@@ -74,7 +97,12 @@ const send = async () => {
 };
 
 const getUploadData = (dataFile: FileUpload) => {
-  file.value = dataFile.file as File;
+  if (dataFile.size > 0) {
+    file.value = dataFile.file as File;
+  } else {
+    file.value = null;
+  }
+
   console.log(file.value);
 };
 </script>
