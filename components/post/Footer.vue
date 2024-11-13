@@ -9,12 +9,13 @@ const props = defineProps<{
   postLikeCount: number;
   postCommentCount: number;
   postUserId: number;
+  isShowComment: boolean;
 }>();
 
 const isDisable: Ref<boolean> = ref(false);
 const apiRoute: Ref<string> = ref("");
 const apiMethod: Ref<ApiMethod> = ref("post");
-const showComment: Ref<boolean> = ref(false);
+const showComment: Ref<boolean> = ref(props.isShowComment);
 const likeCount: Ref<number> = ref(props.postLikeCount);
 const commentCount: Ref<number> = ref(props.postCommentCount);
 const isLike: Ref<boolean> = ref(props.isLikedUser);

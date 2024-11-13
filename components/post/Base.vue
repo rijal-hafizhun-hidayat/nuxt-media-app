@@ -3,7 +3,6 @@ const props = defineProps<{
   isMyProfile: Boolean;
   userId?: number;
 }>();
-console.log(props);
 interface Response {
   statusCode: number;
   message: string;
@@ -90,6 +89,7 @@ const toProfile = (userId: number) => {
           <p>{{ post.content }}</p>
         </div>
         <PostFooter
+          :isShowComment="false"
           :postId="post.id"
           :isLikedUser="post.is_liked_user"
           :postLikeCount="post.post_like_count"

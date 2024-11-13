@@ -78,6 +78,9 @@ const toProfile = (userId: number) => {
             <p>{{ post.content }}</p>
           </div>
           <PostFooter
+            :isShowComment="
+              route.query.notification_type === 'comment' ? true : false
+            "
             :postId="post.id"
             :isLikedUser="post.is_liked_user"
             :postLikeCount="post.post_like_count"
