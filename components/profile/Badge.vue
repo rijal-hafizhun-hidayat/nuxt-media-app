@@ -2,37 +2,85 @@
 interface Response {
   statusCode: number;
   message: string;
-  data: ResponseProfile | null;
+  data: Profile | UserFollow;
 }
-interface ResponseProfile {
+interface Profile {
   avatar: string;
   bio: string;
   email: string;
   id: number;
   name: string;
+  followed_users: UserFollow[];
 }
+interface UserFollow {
+  id: number;
+  follower_user_id: number;
+  followed_user_id: number;
+  followed_at: Date;
+}
+
 const props = defineProps<{
   isMyProfile: boolean;
   userId?: number;
 }>();
-const apiRoute: Ref<string> = ref("");
-const router = useRouter();
-const response: Ref<Response> = ref({} as Response);
 
-apiRoute.value = props.isMyProfile ? "profile" : `profile/${props.userId}`;
+const apiRoute: Ref<string> = ref(
+  props.isMyProfile ? "profile" : `profile/${props.userId}`
+);
+const router = useRouter();
+const response: Ref<Profile | null> = ref(null);
+const isFollowed: Ref<boolean> = ref(false);
+const { $api, $swal } = useNuxtApp();
+
 const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 
 if (data.value) {
-  response.value = data.value;
-  console.log(response.value);
+  console.log(data.value);
+  response.value = data.value.data as Profile;
+  if (response.value.followed_users.length > 0) {
+    isFollowed.value = true;
+  }
+  //isFollowed.value = response.value.followed_users.length > 0 ? true : false;
 } else if (error.value) {
   console.log(error.value);
 }
+
+const plainTextFollowed = computed(() => {
+  return isFollowed.value ? "already followed" : "follow";
+});
 
 const updateProfile = () => {
   return router.push({
     name: "profile-update",
   });
+};
+
+const followUser = async (userId: number) => {
+  try {
+    const result: Response = await $api<Response>("user_follow", {
+      method: "post",
+      body: {
+        followed_user_id: userId,
+      },
+    });
+
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
+
+    isFollowed.value = true;
+  } catch (error: any) {
+    if (error.data.statusCode === 404) {
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    }
+    console.log(error.data);
+  }
 };
 </script>
 <template>
@@ -43,16 +91,23 @@ const updateProfile = () => {
           <div>
             <NuxtImg
               class="object-cover object-top w-28 sm:w-40 h-28 sm:h-40"
-              :src="response.data?.avatar ?? 'img/falling-into-darkness.png'"
+              :src="response?.avatar ?? 'img/falling-into-darkness.png'"
             />
           </div>
           <div>
-            <p class="font-bold text-lg">{{ response.data?.name }}</p>
+            <p class="font-bold text-lg">{{ response?.name }}</p>
           </div>
           <div>
-            <p class="italic">{{ response.data?.bio }}</p>
+            <p class="italic">{{ response?.bio }}</p>
           </div>
           <div>
+            <BasePrimaryButton
+              @click="followUser(response?.id as number)"
+              v-if="!props.isMyProfile"
+              :disabled="isFollowed"
+              type="button"
+              >{{ plainTextFollowed }}</BasePrimaryButton
+            >
             <BasePrimaryButton
               v-if="props.isMyProfile"
               @click="updateProfile()"
