@@ -37,7 +37,7 @@ const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 if (data.value) {
   console.log(data.value);
   response.value = data.value.data as Profile;
-  if (response.value.followed_users.length > 0) {
+  if (!props.isMyProfile && response.value.followed_users.length > 0) {
     isFollowed.value = true;
   }
   //isFollowed.value = response.value.followed_users.length > 0 ? true : false;

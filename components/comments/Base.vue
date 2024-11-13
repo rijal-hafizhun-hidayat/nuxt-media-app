@@ -27,7 +27,9 @@ const props = defineProps<{
   postUserId: number;
 }>();
 
+const authStore = useAuthStore();
 const { $api } = useNuxtApp();
+const router = useRouter();
 const isLoading: Ref<boolean> = ref(false);
 const postComments: Ref<PostComment[] | null> = ref(null);
 const form: Form = reactive({
@@ -77,6 +79,18 @@ const sendComment = async () => {
     console.log(error.data);
   }
 };
+const toProfile = (userId: number) => {
+  //console.log(userId);
+  const routePage: any = {};
+  if (authStore.userId === userId) {
+    routePage.name = "profile";
+  } else {
+    routePage.name = "profile-id";
+    routePage.params = {};
+    routePage.params.id = userId;
+  }
+  return router.push(routePage);
+};
 </script>
 <template>
   <div class="border-t">
@@ -97,7 +111,10 @@ const sendComment = async () => {
         </div>
         <div class="grid grid-rows-1 gap-1 max-w-3xl overflow-x-auto">
           <div class="bg-gray-500 p-2 rounded-md">
-            <div>
+            <div
+              class="hover:cursor-pointer"
+              @click="toProfile(postComment.user_id)"
+            >
               <p class="font-bold capitalize text-white">
                 {{ postComment.user.name }}
               </p>
@@ -108,9 +125,11 @@ const sendComment = async () => {
               </p>
             </div>
           </div>
+          <div>
+            <p>{{ TimestampUtils.formatTimestamp(postComment.created_at) }}</p>
+          </div>
         </div>
       </div>
-      <!-- <div ref="bottomEl"></div> -->
     </div>
     <div class="py-4">
       <form @submit.prevent="sendComment()">
