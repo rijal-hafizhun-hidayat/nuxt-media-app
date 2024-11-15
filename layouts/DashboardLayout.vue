@@ -65,7 +65,7 @@ const myProfile = () => {
                     <div class="space-x-1">
                       <span>Notifikasi</span>
                       <span
-                        v-if="navbar"
+                        v-if="navbar && navbar.notification_count > 0"
                         class="bg-red-500 px-1 py-0 rounded text-white"
                         >{{ navbar.notification_count }}</span
                       >

@@ -10,6 +10,7 @@ interface Profile {
   email: string;
   id: number;
   name: string;
+  followed_user_count: number;
   followed_users: UserFollow[];
 }
 interface UserFollow {
@@ -40,7 +41,6 @@ if (data.value) {
   if (!props.isMyProfile && response.value.followed_users.length > 0) {
     isFollowed.value = true;
   }
-  //isFollowed.value = response.value.followed_users.length > 0 ? true : false;
 } else if (error.value) {
   console.log(error.value);
 }
@@ -85,38 +85,53 @@ const followUser = async (userId: number) => {
 </script>
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
+    <div
+      v-if="response"
+      class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto"
+    >
       <div class="flex justify-center">
         <div class="grid justify-items-center space-y-4">
           <div>
             <NuxtImg
               class="object-cover object-top w-28 sm:w-40 h-28 sm:h-40"
-              :src="response?.avatar ?? 'img/falling-into-darkness.png'"
+              :src="response.avatar ?? 'img/falling-into-darkness.png'"
             />
           </div>
           <div>
-            <p class="font-bold text-lg">{{ response?.name }}</p>
+            <p class="font-bold text-lg">{{ response.name }}</p>
           </div>
           <div>
-            <p class="italic">{{ response?.bio }}</p>
+            <p class="italic">{{ response.bio }}</p>
           </div>
-          <div>
-            <BasePrimaryButton
-              @click="followUser(response?.id as number)"
-              v-if="!props.isMyProfile"
-              :disabled="isFollowed"
-              type="button"
-              >{{ plainTextFollowed }}</BasePrimaryButton
-            >
-            <BasePrimaryButton
-              v-if="props.isMyProfile"
-              @click="updateProfile()"
-              type="button"
-              >edit profile</BasePrimaryButton
-            >
+          <div class="flex justify-center space-x-2">
+            <div v-if="!props.isMyProfile">
+              <BasePrimaryButton
+                @click="followUser(response?.id as number)"
+                :disabled="isFollowed"
+                type="button"
+                >{{ plainTextFollowed }}</BasePrimaryButton
+              >
+            </div>
+
+            <div v-if="props.isMyProfile">
+              <BasePrimaryButton @click="updateProfile()" type="button"
+                >edit profile</BasePrimaryButton
+              >
+            </div>
+            <div>
+              <BasePrimaryButton type="button" disabled
+                >{{ response.followed_user_count }} follow</BasePrimaryButton
+              >
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    <div
+      v-else
+      class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto"
+    >
+      <p>no data found</p>
     </div>
   </div>
 </template>
