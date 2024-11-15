@@ -1,7 +1,25 @@
 <script setup lang="ts">
+interface Response {
+  statusCode: number;
+  message: string;
+  data: Navbar;
+}
+interface Navbar {
+  notification_count: number;
+}
+
 const showingNavigationDropdown = ref(false);
 const router = useRouter();
 const useAuth = useAuthStore();
+const navbar: Ref<Navbar | null> = ref(null);
+
+const { data, error } = await useCustomFetch<Response>("navbar");
+if (data.value) {
+  navbar.value = data.value.data;
+  console.log(navbar.value);
+} else if (error.value) {
+  console.log(error.value);
+}
 
 const logout = () => {
   useAuth.logout();
@@ -44,7 +62,14 @@ const myProfile = () => {
                     class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out"
                     to="/notification"
                   >
-                    Notifikasi
+                    <div class="space-x-1">
+                      <span>Notifikasi</span>
+                      <span
+                        v-if="navbar"
+                        class="bg-red-500 px-1 py-0 rounded text-white"
+                        >{{ navbar.notification_count }}</span
+                      >
+                    </div>
                   </NuxtLink>
                 </div>
               </div>
