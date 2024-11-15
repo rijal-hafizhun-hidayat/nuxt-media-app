@@ -30,6 +30,7 @@ const apiRoute: Ref<string> = ref(
 );
 const router = useRouter();
 const response: Ref<Profile | null> = ref(null);
+const followedUserCount: Ref<number> = ref(0);
 const isFollowed: Ref<boolean> = ref(false);
 const { $api, $swal } = useNuxtApp();
 
@@ -38,6 +39,7 @@ const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 if (data.value) {
   console.log(data.value);
   response.value = data.value.data as Profile;
+  followedUserCount.value = response.value.followed_user_count;
   if (!props.isMyProfile && response.value.followed_users.length > 0) {
     isFollowed.value = true;
   }
@@ -71,6 +73,7 @@ const followUser = async (userId: number) => {
     });
 
     isFollowed.value = true;
+    followedUserCount.value++;
   } catch (error: any) {
     if (error.data.statusCode === 404) {
       $swal.fire({
@@ -120,7 +123,7 @@ const followUser = async (userId: number) => {
             </div>
             <div>
               <BasePrimaryButton type="button" disabled
-                >{{ response.followed_user_count }} follow</BasePrimaryButton
+                >{{ followedUserCount }} follow</BasePrimaryButton
               >
             </div>
           </div>
