@@ -1,12 +1,29 @@
 <script setup lang="ts">
-const { $api } = useNuxtApp();
+interface Response {
+  statusCode: number;
+  message: string;
+  data: Register;
+}
+interface Register {
+  created_at: Date;
+  email: string;
+  name: string;
+  updated_at: Date;
+}
+interface Validation {
+  statusCode: number;
+  errors: Record<string, string[]>;
+  message?: Record<string, string[]>;
+}
 interface Form {
   name: string;
   email: string;
   password: string;
 }
 
-const validation: Ref<any> = ref([]);
+const { $api, $swal } = useNuxtApp();
+const router = useRouter();
+const validation: Ref<Validation | null> = ref(null);
 const isLoading: Ref<Boolean> = ref(false);
 const form: Form = reactive({
   name: "",
@@ -17,7 +34,7 @@ const form: Form = reactive({
 const register = async () => {
   try {
     isLoading.value = true;
-    const response: any = await $api("/register", {
+    const response: Response = await $api("/register", {
       method: "post",
       body: {
         name: form.name,
@@ -25,13 +42,26 @@ const register = async () => {
         password: form.password,
       },
     });
-    validation.value = response;
-    console.log(validation.value);
+    $swal.fire({
+      title: "success",
+      text: response.message,
+      icon: "success",
+    });
+    await router.push({
+      name: "index",
+    });
   } catch (error: any) {
     isLoading.value = false;
-    //console.log(error.data);
-    validation.value = error.data;
-    console.log(validation.value);
+    if (error.data && error.data.statusCode === 404) {
+      validation.value = error.data;
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    } else if (error.data && error.data.statusCode === 400) {
+      validation.value = error.data;
+    }
   } finally {
     isLoading.value = false;
   }
@@ -39,14 +69,6 @@ const register = async () => {
 </script>
 <template>
   <NuxtLayout name="login-layout">
-    <BaseDangerAlert
-      v-if="validation.statusCode === 404"
-      :message="validation.errors"
-    />
-    <BaseSuccessAlert
-      v-if="validation.statusCode === 200"
-      :message="validation.message"
-    />
     <form @submit.prevent="register()">
       <div class="space-y-4">
         <div>
@@ -58,8 +80,12 @@ const register = async () => {
             autofocus
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.name"
-            :message="validation.errors.name._errors[0]"
+            v-if="
+              validation &&
+              validation.statusCode === 400 &&
+              validation.errors.name
+            "
+            :message="validation.errors.name[0]"
           />
         </div>
         <div>
@@ -71,21 +97,29 @@ const register = async () => {
             autofocus
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.email"
-            :message="validation.errors.email._errors[0]"
+            v-if="
+              validation &&
+              validation.statusCode === 400 &&
+              validation.errors.email
+            "
+            :message="validation.errors.email[0]"
           />
         </div>
         <div>
           <BaseInputLabel>Password</BaseInputLabel>
           <BaseTextInput
-            type="text"
+            type="password"
             class="mt-1 block w-full"
             v-model="form.password"
             autofocus
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.password"
-            :message="validation.errors.password._errors[0]"
+            v-if="
+              validation &&
+              validation.statusCode === 400 &&
+              validation.errors.password
+            "
+            :message="validation.errors.password[0]"
           />
         </div>
         <div class="flex justify-end">

@@ -1,10 +1,28 @@
 <script setup lang="ts">
+interface Response {
+  statusCode: number;
+  message: string;
+  data: Navbar;
+}
+interface Navbar {
+  notification_count: number;
+}
+
 const showingNavigationDropdown = ref(false);
 const router = useRouter();
-const token = useCookie<null>("token");
+const useAuth = useAuthStore();
+const navbar: Ref<Navbar | null> = ref(null);
+
+const { data, error } = await useCustomFetch<Response>("navbar");
+if (data.value) {
+  navbar.value = data.value.data;
+  console.log(navbar.value);
+} else if (error.value) {
+  console.log(error.value);
+}
 
 const logout = () => {
-  token.value = null;
+  useAuth.logout();
   return router.push({
     name: "index",
   });
@@ -34,9 +52,32 @@ const myProfile = () => {
                     active-class="border-indigo-700"
                     inactive-class="border-indigo-500"
                     class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out"
-                    to="/dashboard"
+                    to="/post"
                   >
                     Beranda
+                  </NuxtLink>
+                  <NuxtLink
+                    active-class="border-indigo-700"
+                    inactive-class="border-indigo-500"
+                    class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out"
+                    to="/notification"
+                  >
+                    <div class="space-x-1">
+                      <span>Notifikasi</span>
+                      <span
+                        v-if="navbar && navbar.notification_count > 0"
+                        class="bg-red-500 px-1 py-0 rounded text-white"
+                        >{{ navbar.notification_count }}</span
+                      >
+                    </div>
+                  </NuxtLink>
+                  <NuxtLink
+                    active-class="border-indigo-700"
+                    inactive-class="border-indigo-500"
+                    class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out"
+                    to="/search"
+                  >
+                    Cari
                   </NuxtLink>
                 </div>
               </div>
@@ -50,7 +91,7 @@ const myProfile = () => {
                           type="button"
                           class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                         >
-                          {{ "rijal hafizhun hidayat" }}
+                          {{ useAuth.name }}
 
                           <svg
                             class="ml-2 -mr-0.5 h-4 w-4"
@@ -139,16 +180,37 @@ const myProfile = () => {
                 class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out"
                 >Beranda</NuxtLink
               >
+              <NuxtLink
+                to="/notification"
+                activeClass="border-indigo-500"
+                exactActiveClass="border-indigo-900"
+                class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out"
+                ><div class="space-x-1">
+                  <span>Notifikasi</span>
+                  <span
+                    v-if="navbar && navbar.notification_count > 0"
+                    class="bg-red-500 px-1 py-0 rounded text-white"
+                    >{{ navbar.notification_count }}</span
+                  >
+                </div></NuxtLink
+              >
+              <NuxtLink
+                to="/search"
+                activeClass="border-indigo-500"
+                exactActiveClass="border-indigo-900"
+                class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition duration-150 ease-in-out"
+                >Cari</NuxtLink
+              >
             </div>
 
             <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
               <div class="px-4">
                 <div class="font-medium text-base text-gray-800">
-                  {{ "rijal hafizhun hidayat" }}
+                  {{ useAuth.name }}
                 </div>
                 <div class="font-medium text-sm text-gray-500">
-                  {{ "rijal hafizhun hidayat" }}
+                  {{ useAuth.name }}
                 </div>
               </div>
 

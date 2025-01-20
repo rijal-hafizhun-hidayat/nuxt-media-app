@@ -5,12 +5,13 @@ definePageMeta({
 interface Response {
   statusCode: number;
   message: string;
-  data: ResponseProfile | null;
+  data: ResponseProfile;
 }
 interface ResponseProfile {
   bio: string;
   email: string;
   name: string;
+  email_verified_at: Date | null;
 }
 const response: Ref<Response> = ref({} as Response);
 const { data, error } = await useCustomFetch<Response>("profile");
@@ -34,11 +35,11 @@ if (data.value) {
       </div>
     </template>
 
-    <ProfileUser :name="response.data?.name ?? null" />
-    <ProfileBio :bio="response.data?.bio ?? null" />
-    <ProfileEmail :email="response.data?.email ?? null" />
+    <ProfileUser :name="response.data.name ?? null" />
+    <ProfileBio :bio="response.data.bio ?? null" />
+    <ProfileEmail :email="response.data.email ?? null" />
     <ProfilePassword />
     <ProfileUpload />
-    <ProfileVerified />
+    <ProfileVerified :emailVerifiedAt="response.data.email_verified_at" />
   </NuxtLayout>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  message: string;
+  message: Record<string, string[]>;
 }>();
 </script>
 <template>

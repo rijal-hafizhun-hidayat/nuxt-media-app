@@ -7,9 +7,22 @@ interface Form {
   email: string;
   newEmail: string;
 }
+interface Result {
+  statusCode: number;
+  message: string;
+  data: ResultUpdateEmail;
+}
+interface ResultUpdateEmail {
+  email: string;
+}
+interface Validation {
+  statusCode: number;
+  errors: Record<string, string[]>;
+}
+
 const isLoading: Ref<boolean> = ref(false);
-const validation: Ref<any> = ref([]);
-const { $api } = useNuxtApp();
+const validation: Ref<Validation | null> = ref(null);
+const { $api, $swal } = useNuxtApp();
 const form: Form = reactive({
   email: props.email ?? "",
   newEmail: "",
@@ -18,19 +31,32 @@ const form: Form = reactive({
 const update = async () => {
   try {
     isLoading.value = true;
-    const result = await $api("profile/update-email", {
+    const result: Result = await $api("profile/update-email", {
       method: "patch",
       body: {
         email: form.newEmail,
       },
     });
 
-    validation.value = result;
-    console.log(validation.value);
+    form.email = result.data.email;
+    form.newEmail = "";
+
+    $swal.fire({
+      title: "success",
+      text: result.message,
+      icon: "success",
+    });
   } catch (error: any) {
-    isLoading.value = false;
-    validation.value = error.data;
-    console.log(validation.value);
+    if (error.data && error.data.statusCode === 400) {
+      validation.value = error.data;
+    } else if (error.data && error.data.statusCode === 404) {
+      $swal.fire({
+        title: "error",
+        text: error.data.errors,
+        icon: "error",
+      });
+    }
+    //console.log(validation.value);
   } finally {
     isLoading.value = false;
   }
@@ -40,14 +66,6 @@ const update = async () => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
       <h1 class="font-bold mb-4">Update Email</h1>
-      <BaseSuccessAlert
-        v-if="validation.statusCode === 200"
-        :message="validation.message"
-      />
-      <BaseDangerAlert
-        v-if="validation.statusCode === 404"
-        :message="validation.errors"
-      />
       <form @submit.prevent="update()" class="space-y-4">
         <div>
           <BaseInputLabel>active email</BaseInputLabel>
@@ -66,8 +84,12 @@ const update = async () => {
             class="mt-1 block w-full"
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.email"
-            :message="validation.errors.email._errors[0]"
+            v-if="
+              validation &&
+              validation.statusCode === 400 &&
+              validation.errors.email
+            "
+            :message="validation.errors.email[0]"
           />
         </div>
         <div>

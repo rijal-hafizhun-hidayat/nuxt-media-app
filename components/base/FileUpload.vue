@@ -51,7 +51,7 @@ const handleFileChange = (e: Event) => {
       // Check if file is an image
       const isImage = ["jpg", "jpeg", "png"].includes(fileExtention);
       // Print to console
-      console.log(fileSize, fileExtention, fileName, isImage);
+      // console.log(fileSize, fileExtention, fileName, isImage);
 
       fileUpload.file = file;
       fileUpload.name = fileName!;
@@ -62,8 +62,6 @@ const handleFileChange = (e: Event) => {
       fileUpload.isUploaded = true;
 
       filePlaceHolder.value = fileUpload.name + "." + fileUpload.fileExtention;
-
-      console.log(fileUpload);
       sendDataToParent();
     } else {
       console.log(errors.value);
@@ -80,7 +78,7 @@ const isFileSizeValid = (fileSize: number) => {
 };
 
 const isFileTypeValid = (fileExtention: string) => {
-  console.log(props.accept.split(","));
+  // console.log(props.accept.split(","));
   if (props.accept.split(",").includes(fileExtention)) {
     console.log("File type is valid");
   } else {
@@ -108,6 +106,7 @@ const resetFileInput = () => {
   fileUpload.isImage = false;
   fileUpload.isUploaded = false;
   filePlaceHolder.value = "no file chosen";
+  sendDataToParent();
 };
 
 const sendDataToParent = () => {

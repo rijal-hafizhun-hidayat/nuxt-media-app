@@ -3,40 +3,33 @@ interface Form {
   email: string;
   password: string;
 }
+interface Validation {
+  statusCode: number;
+  errors: Record<string, string[]>;
+}
 
-const store = useAuthStore();
 const router = useRouter();
+const authStore = useAuthStore();
 const isLoading: Ref<boolean> = ref(false);
-const validation: Ref<any> = ref([]);
-const { $api } = useNuxtApp();
+const validation: Ref<Validation | null> = ref(null);
 const form: Form = reactive({
   email: "",
   password: "",
 });
 
-const login = async () => {
+const login = async (): Promise<void> => {
   try {
     isLoading.value = true;
-    const response: any = await $api("login", {
-      method: "post",
-      body: {
-        email: form.email,
-        password: form.password,
-      },
-    });
-
-    console.log(response);
-    store.isLogged = true;
-    const token = useCookie("token");
-    token.value = response.data;
-
-    return router.push({
-      name: "dashboard",
+    await authStore.login(form);
+    await router.push({
+      name: "post",
     });
   } catch (error: any) {
     isLoading.value = false;
-    validation.value = error.data;
-    console.log(validation.value);
+    if (error.data) {
+      validation.value = error.data;
+      console.log(validation.value);
+    }
   } finally {
     isLoading.value = false;
   }
@@ -45,7 +38,7 @@ const login = async () => {
 <template>
   <NuxtLayout name="login-layout">
     <BaseDangerAlert
-      v-if="validation.statusCode === 404"
+      v-if="validation && validation.statusCode === 404"
       :message="validation.errors"
     />
     <form @submit.prevent="login()">
@@ -59,8 +52,8 @@ const login = async () => {
             autofocus
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.email"
-            :message="validation.errors.email._errors[0]"
+            v-if="validation && validation.statusCode === 400 && validation!.errors.email"
+            :message="validation!.errors.email[0]"
           />
         </div>
         <div>
@@ -71,8 +64,8 @@ const login = async () => {
             v-model="form.password"
           />
           <BaseInputError
-            v-if="validation.statusCode === 400 && validation.errors.password"
-            :message="validation.errors.password._errors[0]"
+            v-if="validation && validation.statusCode === 400 && validation!.errors.password"
+            :message="validation!.errors.password[0]"
           />
         </div>
         <div class="flex items-center justify-between">

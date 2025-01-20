@@ -1,7 +1,13 @@
-<script setup lang="ts">
+<script setup>
 definePageMeta({
   middleware: ["auth-middleware"],
 });
+const router = useRouter();
+const createPost = () => {
+  return router.push({
+    name: "post-create",
+  });
+};
 </script>
 <template>
   <NuxtLayout name="dashboard-layout">
@@ -9,12 +15,17 @@ definePageMeta({
       <div class="flex justify-between">
         <div>
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            My Profile
+            Beranda
           </h2>
+        </div>
+        <div>
+          <BasePrimaryButton @click="createPost()" type="button"
+            >Buat Postingan</BasePrimaryButton
+          >
         </div>
       </div>
     </template>
-    <ProfileBadge :isMyProfile="true" />
-    <PostBase :isMyProfile="true" />
+
+    <PostBase :is_profile="false" />
   </NuxtLayout>
 </template>

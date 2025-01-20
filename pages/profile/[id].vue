@@ -1,13 +1,9 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   middleware: ["auth-middleware"],
 });
-const router = useRouter();
-const createPost = () => {
-  return router.push({
-    name: "dashboard-create",
-  });
-};
+const route = useRoute();
+const userId: number = parseInt(route.params.id as string);
 </script>
 <template>
   <NuxtLayout name="dashboard-layout">
@@ -15,17 +11,12 @@ const createPost = () => {
       <div class="flex justify-between">
         <div>
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Beranda
+            Profile
           </h2>
-        </div>
-        <div>
-          <BasePrimaryButton @click="createPost()" type="button"
-            >Buat Postingan</BasePrimaryButton
-          >
         </div>
       </div>
     </template>
-
-    <PostBase :is_profile="false" />
+    <ProfileBadge :isMyProfile="false" :userId="userId" />
+    <PostBase :isMyProfile="false" :userId="userId" />
   </NuxtLayout>
 </template>

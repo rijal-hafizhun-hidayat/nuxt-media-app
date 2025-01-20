@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
-  is_profile: Boolean;
+  isMyProfile: Boolean;
+  userId?: number;
 }>();
 interface Response {
   statusCode: number;
@@ -14,19 +15,28 @@ interface PostResponse {
   created_at: Date;
   updated_at: Date;
   user: UserPostResponse;
+  is_liked_user: boolean;
+  post_like_count: number;
+  post_comment_count: number;
 }
 interface UserPostResponse {
   id: number;
   name: string;
+  avatar: string;
 }
+const authStore = useAuthStore();
+const router = useRouter();
 const posts: Ref<Response> = ref({} as Response);
 const apiRoute: Ref<string> = ref("");
 
-if (props.is_profile === true) {
+if (props.isMyProfile === true) {
   apiRoute.value = "profile/post";
+} else if (props.userId) {
+  apiRoute.value = `profile/${props.userId}/post`;
 } else {
   apiRoute.value = "post";
 }
+
 const { data, error } = await useCustomFetch<Response>(apiRoute.value);
 
 if (data.value) {
@@ -35,6 +45,18 @@ if (data.value) {
 } else if (error) {
   console.log(error);
 }
+
+const toProfile = (userId: number) => {
+  const routePage: any = {};
+  if (authStore.userId === userId) {
+    routePage.name = "profile";
+  } else {
+    routePage.name = "profile-id";
+    routePage.params = {};
+    routePage.params.id = userId;
+  }
+  return router.push(routePage);
+};
 </script>
 <template>
   <div
@@ -46,18 +68,34 @@ if (data.value) {
       <div class="space-y-4">
         <div class="flex space-x-4">
           <div>
-            <p class="font-bold capitalize">{{ post.user.name }}</p>
+            <NuxtImg
+              class="object-cover object-top w-10 sm:w-10 h-10 sm:h-10"
+              :src="post.user.avatar ?? 'img/falling-into-darkness.png'"
+            />
           </div>
-          <div>
+          <div class="my-auto">
+            <p
+              @click="toProfile(post.user_id)"
+              class="cursor-pointer font-bold capitalize"
+            >
+              {{ post.user.name }}
+            </p>
+          </div>
+          <div class="my-auto">
             <p class="text-green-500 font-bold">online</p>
           </div>
         </div>
         <div>
           <p>{{ post.content }}</p>
         </div>
-        <div>
-          <PostFooter />
-        </div>
+        <PostFooter
+          :isShowComment="false"
+          :postId="post.id"
+          :isLikedUser="post.is_liked_user"
+          :postLikeCount="post.post_like_count"
+          :postCommentCount="post.post_comment_count"
+          :postUserId="post.user_id"
+        />
       </div>
     </div>
   </div>
